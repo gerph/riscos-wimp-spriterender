@@ -13,6 +13,7 @@
 #include "GContext/gcontext.h"
 
 typedef struct wimpgraphics_s {
+    int log2bpp;    /* Depth as log2 of Bits Per Pixel */
     int xpixel;     /* OS units for an X pixel */
     int ypixel;     /* OS units for a Y pixel */
 } wimpgraphics_t;

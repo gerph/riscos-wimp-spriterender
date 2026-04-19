@@ -1,0 +1,60 @@
+/*******************************************************************
+ * File:        colourtransconstants
+ * Purpose:     Some constants we can use with ColourTrans
+ * Author:      Gerph
+ * Date:        19 Apr 2026
+ ******************************************************************/
+
+#ifndef COLOURTRANSCONSTANTS_H
+#define COLOURTRANSCONSTANTS_H
+
+#define ColourTrans_CurrentPalette      -1
+#define ColourTrans_DefaultPalette      0
+
+// OS_Mode
+#define ColourTrans_CurrentMode         -1
+
+// .Bits
+#define Error_ColourTransBadCalib       0xa00
+#define Error_ColourTransConvOver       0xa01
+#define Error_ColourTransBadHSV         0xa02
+#define Error_ColourTransSwitched       0xa03
+#define Error_ColourTransBadMiscOp      0xa04
+#define Error_ColourTransBadFlags       0xa05
+#define Error_ColourTransBuffOver       0xa06
+#define Error_ColourTransBadDepth       0xa07
+
+// .Int
+#define ColourTrans_ColourRange     65536
+
+// ColourTrans_CalibrationFlags
+#define ColourTrans_WriteDefaultCalibration     (1<<0)
+
+// ColourTrans_ColourFlags
+#define ColourTrans_SetText             (1<<9)
+
+// ColourTrans_GCOLFlags
+#define ColourTrans_UseECFS             (1<<8)
+
+// ColourTrans_PaletteFlags
+#define ColourTrans_PaletteForSprite    (1<<0)
+#define ColourTrans_FlashingPalette     (1<<1)
+
+// ColourTrans_TableFlags
+#define ColourTrans_GivenSprite         (1<<0)
+#define ColourTrans_CurrentIfAbsent     (1<<1)
+#define ColourTrans_GivenTransferFn     (1<<2)
+#define ColourTrans_ReturnGCOLList      (1<<3)
+#define ColourTrans_ReturnWideEntries   (1<<4)
+#define ColourTrans_ReturnFormatMask    (15<<24)
+#define ColourTrans_ReturnPixelTable    (0<<24)
+#define ColourTrans_ReturnPaletteTable  (1<<24)
+
+// ColourTrans_TextColourFlags
+#define ColourTrans_SetFG               0
+#define ColourTrans_SetBG               (1<<7)
+
+// Font_F
+#define ColourTrans_CurrentFont     0
+
+#endif

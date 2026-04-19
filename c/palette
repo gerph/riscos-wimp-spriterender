@@ -1,0 +1,41 @@
+/*******************************************************************
+ * File:        palette
+ * Purpose:     Definitions for the Wimp palette
+ * Author:      Gerph
+ * Date:        22 Feb 2026
+ ******************************************************************/
+
+#include <string.h>
+#include "palette.h"
+
+wimp_palette_t default_wimp_palette = {
+    // Regular colours
+    {
+        0xffffff00, 0xdddddd00, 0xbbbbbb00, 0x99999900,
+        0x77777700, 0x55555500, 0x33333300, 0x00000000,
+        0x99440000, 0x00eeee00, 0x00cc0000, 0x0000dd00,
+        0xbbeeee00, 0x00885500, 0x00bbff00, 0xffbb0000
+    },
+
+    // Border colour
+    0x00000000,
+
+    // Pointer colours
+    {
+        0xFFFF0000, 0x99000000, 0xff000000
+    }
+};
+wimp_palette_t current_wimp_palette;
+
+
+/*************************************************** Gerph *********
+ Function:      palette_init
+ Description:   Initialise the wimp palette with default values
+ Parameters:    none
+ Returns:       none
+ ******************************************************************/
+void palette_init(void)
+{
+    memcpy(&current_wimp_palette, &default_wimp_palette, sizeof(default_wimp_palette));
+}
+

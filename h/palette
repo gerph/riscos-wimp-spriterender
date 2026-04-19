@@ -1,0 +1,35 @@
+/*******************************************************************
+ * File:        palette
+ * Purpose:     Definitions for the Wimp palette
+ * Author:      Gerph
+ * Date:        22 Feb 2026
+ ******************************************************************/
+
+#ifndef PALETTE_H
+#define PALETTE_H
+
+#include "GContext/gcontext.h"
+
+
+typedef struct wimp_palette_s {
+    colour_t screen[16];
+    colour_t border;
+    colour_t pointer[3];
+} wimp_palette_t;
+
+
+extern wimp_palette_t default_wimp_palette;
+extern wimp_palette_t current_wimp_palette;
+
+
+/*************************************************** Gerph *********
+ Function:      palette_init
+ Description:   Initialise the wimp palette with default values
+ Parameters:    none
+ Returns:       none
+ ******************************************************************/
+void palette_init(void);
+
+
+#endif
+

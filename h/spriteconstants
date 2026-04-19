@@ -1,0 +1,22 @@
+/*******************************************************************
+ * File:        spriteconstants
+ * Purpose:     Some constants for use with sprite
+ * Author:      Gerph
+ * Date:        19 Apr 2026
+ ******************************************************************/
+
+#ifndef SPRITECONSTANTS_H
+#define SPRITECONSTANTS_H
+
+#include "riscos/Sprite.h"
+
+// Bits that may be set in the plot actions in OS_SpriteOp 28, 32, 52, 56, 65.
+#define SpritePlotAction_UseMask                (1<<3)
+#define SpritePlotAction_UsePalette             (1<<4)
+#define SpritePlotAction_WideTranslationPresent (1<<5)
+#define SpritePlotAction_Dither                 (1<<6)
+#define SpritePlotAction_ColourMap              (1<<7)
+#define SpritePlotAction_TranslucencyShift      8
+#define SpritePlotAction_TranslucencyMask       255
+
+#endif
