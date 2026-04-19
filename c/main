@@ -1,0 +1,18 @@
+/*******************************************************************
+ * File:        main
+ * Purpose:     WimpSpriteRender command line tool
+ * Author:      YOUR NAME
+ ******************************************************************/
+
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "VersionNum"
+
+int main(int argc, char *argv[])
+{
+    printf("WimpSpriteRender " Module_FullVersionAndDate "\n");
+    printf("Syntax: *WimpSpriteRender\n");
+
+    exit(EXIT_SUCCESS);
+}

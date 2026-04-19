@@ -1,0 +1,24 @@
+/* WimpSpriteRender (0.01) 13:06:15 19/4/2026
+ *
+ * This file is automatically maintained, do not edit manually.
+ *
+ */
+#define Module_MajorVersion_CMHG        0.01
+#define Module_MinorVersion_CMHG        
+#define Module_Date_CMHG                19 Apr 2026
+
+#define Module_MajorVersion             "0.01"
+#define Module_Version                  1
+#define Module_MinorVersion             ""
+#define Module_Date                     "19 Apr 2026"
+
+#define Module_ApplicationDate2         "19-Apr-26"
+#define Module_ApplicationDate4         "19-Apr-2026"
+
+#define Module_ComponentName            "WimpSpriteRender"
+#define Module_ComponentBranch          ""
+#define Module_ComponentPath            ""
+
+#define Module_FullVersion              "0.01"
+#define Module_FullVersionAndDate       "0.01 (19 Apr 2026)"
+#define Module_HelpVersion              "0.01 (19 Apr 2026)"
