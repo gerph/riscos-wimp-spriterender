@@ -11,6 +11,7 @@
 #include "swis.h"
 
 #include "wimpsprite.h"
+#include "scale.h"
 
 /* STUBBY! */
 
@@ -96,6 +97,45 @@ bounds_t wimpsprite_getsize(wimpsprite_t *wsprite)
     return bounds;
 }
 
+/*************************************************** Gerph *********
+ Function:      wimpsprite_getscale
+ Description:   Read the scale factors to use for a given sprite
+ Parameters:    wsprite-> the sprite we want to get the scaling of
+ Returns:       the scale factors to use
+ ******************************************************************/
+scale_t wimpsprite_getscale(wimpsprite_t *wsprite)
+{
+    scale_t scale;
+    eigenfactors_t seigen;
+    int render_xpixel = wsprite->graphics->xpixel;
+    int render_ypixel = wsprite->graphics->ypixel;
+    int sprite_xpixel;
+    int sprite_ypixel;
+    seigen = sprite_geteigenfactors(wsprite->sprite);
+
+    sprite_xpixel = 1 << seigen.xeig;
+    sprite_ypixel = 1 << seigen.yeig;
+
+    if (wsprite->is_halfsize)
+    {
+        render_xpixel *= 2;
+        render_ypixel *= 2;
+    }
+
+    if ((render_xpixel == sprite_xpixel && render_ypixel == sprite_ypixel) || wsprite->is_unscaled)
+    {
+        scale = scale_identity;
+    }
+    else
+    {
+        scale.xmult = sprite_xpixel;
+        scale.ymult = sprite_ypixel;
+        scale.xdiv = render_xpixel;
+        scale.ydiv = render_ypixel;
+    }
+
+    return scale;
+}
 
 
 /*

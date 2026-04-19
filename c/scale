@@ -1,0 +1,46 @@
+/*******************************************************************
+ * File:        scale
+ * Purpose:     Scaling handling for RISC OS
+ * Author:      Gerph
+ * Date:        19 Apr 2026
+ ******************************************************************/
+
+#include <stdint.h>
+#include "scale.h"
+
+scale_t scale_identity = {
+    1,
+    1,
+    1,
+    1
+};
+
+/*************************************************** Gerph *********
+ Function:      scale_apply
+ Description:   Apply scale factors to a coordinate pair
+ Parameters:    scale-> the scaling block to apply
+                coords-> the coordinates to update with the scale
+ Returns:       none
+ ******************************************************************/
+void scale_apply(const scale_t *scale, coords_t *coords)
+{
+    /* FIXME: Use muldiv instead of calculating directly */
+    coords->x = coords->x * scale->xmult / scale->xdiv;
+    coords->y = coords->y * scale->ymult / scale->ydiv;
+}
+
+/*************************************************** Gerph *********
+ Function:      scale_applybbox
+ Description:   Apply scale factors to a bounding box
+ Parameters:    scale-> the scaling block to apply
+                bbox-> the coordinates to update with the scale
+ Returns:       none
+ ******************************************************************/
+void scale_applybbox(const scale_t *scale, bbox_t *bbox)
+{
+    /* FIXME: Use muldiv instead of calculating directly */
+    bbox->x0 = bbox->x0 * scale->xmult / scale->xdiv;
+    bbox->y0 = bbox->y0 * scale->ymult / scale->ydiv;
+    bbox->x1 = bbox->x1 * scale->xmult / scale->xdiv;
+    bbox->y1 = bbox->y1 * scale->ymult / scale->ydiv;
+}
