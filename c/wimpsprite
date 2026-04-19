@@ -1,0 +1,133 @@
+/*******************************************************************
+ * File:        wimpsprite
+ * Purpose:     Sprite manipulation for the WindowManager
+ * Author:      Gerph
+ * Date:        19 Apr 2026
+ ******************************************************************/
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include "swis.h"
+
+#include "wimpsprite.h"
+
+/* STUBBY! */
+
+bounds_t sprite_getsize(sprite_t *sprite)
+{
+    bounds_t bounds = { 0, 0 };
+    return bounds;
+}
+
+eigenfactors_t sprite_geteigenfactors(sprite_t *sprite)
+{
+    eigenfactors_t eigens = { 0, 0 };
+    return eigens;
+}
+
+
+
+
+
+/*************************************************** Gerph *********
+ Function:      wimpsprite_create
+ Description:   Create a sprite object for rendering or sizing.
+ Parameters:    graphics-> our Wimp graphics context
+                sprite-> the sprite we are rendering
+                is_halfsize
+                is_unscaled
+                is_selected
+                is_shaded = properties for the render
+                window_background
+                selection_colour = rendering properties
+ Returns:       pointer to a new renderable sprite object
+ ******************************************************************/
+wimpsprite_t *wimpsprite_create(wimpgraphics_t *graphics, sprite_t *sprite,
+                                bool is_halfsize, bool is_unscaled,
+                                bool is_selected, bool is_shaded,
+                                colour_t window_background,
+                                colour_t selection_colour)
+{
+    wimpsprite_t *wsprite = malloc(sizeof(*wsprite));
+    if (wsprite == NULL)
+        return NULL;
+
+    wsprite->graphics = graphics;
+    wsprite->sprite = sprite;
+    wsprite->is_halfsize = is_halfsize;
+    wsprite->is_unscaled = is_unscaled;
+    wsprite->is_selected = is_selected;
+    wsprite->is_shaded = is_shaded;
+    wsprite->window_background = window_background;
+    wsprite->selection_colour = selection_colour;
+
+    return wsprite;
+}
+
+
+/*************************************************** Gerph *********
+ Function:      wimpsprite_getsize
+ Description:   Retrieves the size of the sprite we are rendering
+ Parameters:    wsprite-> the sprite information to render
+ Returns:       a width and height for the bounds
+ ******************************************************************/
+bounds_t wimpsprite_getsize(wimpsprite_t *wsprite)
+{
+    bounds_t bounds;
+    eigenfactors_t seigen;
+    if (wsprite == NULL)
+    {
+        bounds.width = 0;
+        bounds.height = 0;
+        return bounds;
+    }
+    bounds = sprite_getsize(wsprite->sprite);
+    seigen = sprite_geteigenfactors(wsprite->sprite);
+
+    bounds.width = bounds.width << seigen.xeig;
+    bounds.height = bounds.height << seigen.yeig;
+
+    if (wsprite->is_halfsize)
+    {
+        bounds.width = bounds.width / 2;
+        bounds.height = bounds.height / 2;
+    }
+    return bounds;
+}
+
+
+
+/*
+class WimpSprite(object):
+    """
+    Operations on sprites in the Wimp.
+    """
+
+    def get_scale(self):
+        render_xpixel = self.graphics.xpixel
+        render_ypixel = self.graphics.ypixel
+        sprite_xpixel = 1<<self.sprite.xeig
+        sprite_ypixel = 1<<self.sprite.yeig
+        if self.is_halfsize:
+            render_xpixel *= 2
+            render_ypixel *= 2
+
+        if render_xpixel == sprite_xpixel and render_ypixel == sprite_ypixel or self.is_unscaled:
+            scale = None
+        else:
+            scale = Scale(self.ro)
+            scale.xmult = sprite_xpixel
+            scale.ymult = sprite_ypixel
+            scale.xdiv = render_xpixel
+            scale.ydiv = render_ypixel
+
+        return scale
+
+    def get_pixtrans(self):
+        return (None, 0)
+
+    def render(self, x0, y0, is_tiled=False):
+        pass
+
+*/

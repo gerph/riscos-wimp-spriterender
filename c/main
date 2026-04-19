@@ -1,7 +1,7 @@
 /*******************************************************************
  * File:        main
  * Purpose:     WimpSpriteRender command line tool
- * Author:      YOUR NAME
+ * Author:      Gerph
  ******************************************************************/
 
 #include <stdlib.h>

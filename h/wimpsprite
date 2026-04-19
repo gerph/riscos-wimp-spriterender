@@ -1,0 +1,63 @@
+/*******************************************************************
+ * File:        wimpsprite
+ * Purpose:     Sprite manipulation for the WindowManager
+ * Author:      Gerph
+ * Date:        19 Apr 2026
+ ******************************************************************/
+
+#ifndef WIMPSPRITE_H
+#define WIMPSPRITE_H
+
+#include <stdbool.h>
+
+#include "GContext/gcontext.h"
+
+typedef struct wimpgraphics_s wimpgraphics_t;
+typedef struct sprite_s sprite_t;
+
+typedef struct wimpsprite_s {
+    wimpgraphics_t *graphics;
+    sprite_t *sprite;
+    bool is_halfsize;
+    bool is_unscaled;
+    bool is_selected;
+    bool is_shaded;
+    colour_t window_background;
+    colour_t selection_colour;
+} wimpsprite_t;
+
+
+typedef struct eigenfactors_s {
+    uint8_t xeig;
+    uint8_t yeig;
+} eigenfactors_t;
+
+
+/*************************************************** Gerph *********
+ Function:      wimpsprite_create
+ Description:   Create a sprite object for rendering or sizing.
+ Parameters:    graphics-> our Wimp graphics context
+                sprite-> the sprite we are rendering
+                is_halfsize
+                is_unscaled
+                is_selected
+                is_shaded = properties for the render
+                window_background
+                selection_colour = rendering properties
+ Returns:       pointer to a new renderable sprite object
+ ******************************************************************/
+wimpsprite_t *wimpsprite_create(wimpgraphics_t *graphics, sprite_t *sprite,
+                                bool is_halfsize, bool is_unscaled,
+                                bool is_selected, bool is_shaded,
+                                colour_t window_background,
+                                colour_t selection_colour);
+
+/*************************************************** Gerph *********
+ Function:      wimpsprite_getsize
+ Description:   Retrieves the size of the sprite we are rendering
+ Parameters:    wsprite-> the sprite information to render
+ Returns:       a width and height for the bounds
+ ******************************************************************/
+bounds_t wimpsprite_getsize(wimpsprite_t *wsprite);
+
+#endif

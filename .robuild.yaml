@@ -25,6 +25,9 @@ jobs:
     # Commands which should be executed to perform the build.
     # The build will terminate if any command returns a non-0 return code or an error.
     script:
+      - echo *** Update C path with the libs we downloaded
+      - Set C$Path @.Lib.,<C$Path>
+      - echo C path is <C$Path>
 
       # Build component
       - echo
