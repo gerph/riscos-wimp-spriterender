@@ -14,7 +14,7 @@
 #include "sprite.h"
 
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
 #define dprintf if (1) printf
