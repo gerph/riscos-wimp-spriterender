@@ -1,0 +1,32 @@
+/*******************************************************************
+ * File:        wimpgraphics
+ * Purpose:     Graphics operations on the screen for the Wimp
+ * Author:      Gerph
+ * Date:        26 Apr 2026
+ ******************************************************************/
+
+#ifndef WIMPGRAPHICS_H
+#define WIMPGRAPHICS_H
+
+#include "types.h"
+
+typedef struct wimpgraphics_s {
+    int32_t screen_width;
+    int32_t screen_height;
+
+    eigenfactors_t eigenfactors;
+
+    int32_t log2bpp;    /* Depth as log2 of Bits Per Pixel */
+    int32_t xpixel;     /* OS units for an X pixel */
+    int32_t ypixel;     /* OS units for a Y pixel */
+} wimpgraphics_t;
+
+/*************************************************** Gerph *********
+ Function:      wimpgraphics_create
+ Description:   Create a graphics context to hold rendering information for the wimp
+ Parameters:    none
+ Returns:       pointer to the graphics structure, or NULL if failed
+ ******************************************************************/
+wimpgraphics_t *wimpgraphics_create(void);
+
+#endif

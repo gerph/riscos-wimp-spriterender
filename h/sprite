@@ -17,6 +17,7 @@
 #include "types.h"
 #include "scale.h"
 
+
 typedef struct sprite_s {
     uint32_t    offset;         /* Offset to next sprite */
     char        name[12];       /* Sprite name, up to 12 characters with trailing zeroes */

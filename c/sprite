@@ -14,6 +14,15 @@
 #include "sprite.h"
 
 
+#define DEBUG
+
+#ifdef DEBUG
+#define dprintf if (1) printf
+#else
+#define dprintf if (0) printf
+#endif
+
+
 /*************************************************** Gerph *********
  Function:      sprite_getsize
  Description:   Read the size of a sprite, in OS units
@@ -143,6 +152,8 @@ _kernel_oserror *sprite_render(sprite_t *sprite, int x0, int y0,
                                  x0, y0,
                                  plot_action,
                                  &scale, pixtrans);
+    dprintf("sprite_render of sprite %p, at %i, %i, with action %i gave: %s\n", sprite, x0, y0, plot_action,
+            err ? err->errmess : "<no error>");
     return err;
 }
 

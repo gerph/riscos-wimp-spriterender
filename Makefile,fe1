@@ -37,7 +37,9 @@ OBJS       = o.main \
 		     o.wimpsprite \
 		   	 o.scale \
 		   	 o.palette \
-		   	 o.sprite
+		   	 o.sprite \
+		   	 o.wimpgraphics \
+		   	 o.colourtrans
 
 # Space separated list of XML files for building documentation.
 #DOCSRC = <prm-in-xml-sources>

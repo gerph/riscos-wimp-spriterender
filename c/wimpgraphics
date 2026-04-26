@@ -1,0 +1,59 @@
+/*******************************************************************
+ * File:        wimpgraphics
+ * Purpose:     Graphics operations on the screen for the Wimp
+ * Author:      Gerph
+ * Date:        26 Apr 2026
+ ******************************************************************/
+
+#include <stdlib.h>
+
+#include "swis.h"
+
+#include "riscos/ModeVariables.h"
+
+#include "wimpgraphics.h"
+
+
+/*************************************************** Gerph *********
+ Function:      wimpgraphics_create
+ Description:   Create a graphics context to hold rendering information for the wimp
+ Parameters:    none
+ Returns:       pointer to the graphics structure, or NULL if failed
+ ******************************************************************/
+wimpgraphics_t *wimpgraphics_create(void)
+{
+    wimpgraphics_t *graphics = calloc(1, sizeof(*graphics));
+    _kernel_oserror *err;
+
+    if (graphics == NULL)
+        return NULL;
+
+    {
+        int32_t vduvarsout[6];
+        int32_t vduvarsin[7];
+        vduvarsin[0] = ModeVariable_XWindLimit;
+        vduvarsin[1] = ModeVariable_YWindLimit;
+        vduvarsin[2] = ModeVariable_Log2BPP;
+        vduvarsin[3] = ModeVariable_XEigFactor;
+        vduvarsin[4] = ModeVariable_YEigFactor;
+        vduvarsin[5] = -1;
+
+        err = _swix(OS_ReadVduVariables, _INR(0,1), vduvarsin,
+                                                    vduvarsout);
+        if (err)
+        {
+            free(graphics);
+            return NULL;
+        }
+
+        graphics->eigenfactors.xeig = vduvarsout[3];
+        graphics->eigenfactors.yeig = vduvarsout[4];
+        graphics->screen_width = ((vduvarsout[0] + 1)) << graphics->eigenfactors.xeig;
+        graphics->screen_height = ((vduvarsout[1] + 1)) << graphics->eigenfactors.yeig;
+        graphics->log2bpp = vduvarsout[2];
+
+        graphics->xpixel = (1 << graphics->eigenfactors.xeig);
+        graphics->ypixel = (1 << graphics->eigenfactors.yeig);
+    }
+    return graphics;
+}

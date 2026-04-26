@@ -15,27 +15,10 @@
 #include "spriteconstants.h"
 #include "palette.h"
 #include "scale.h"
+#include "colourtrans.h"
 
 /* STUBBY! */
 
-
-
-int colourtrans_gettablesize(uint32_t src_mode, void *src_palette,
-                             uint32_t dst_mode, void *dst_palette,
-                             uint32_t flags)
-{
-    return 16;
-}
-
-bool colourtrans_generatetable(uint32_t src_mode, void *src_palette,
-                               uint32_t dst_mode, void *dst_palette,
-                               void *output,
-                               uint32_t flags,
-                               void *colourmap_func,
-                               void *colourmap_ws)
-{
-    return true;
-}
 
 void wimpgraphics_apply_clip(wimpgraphics_t *graphics)
 {

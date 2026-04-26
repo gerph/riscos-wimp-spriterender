@@ -1,0 +1,72 @@
+/*******************************************************************
+ * File:        colourtrans
+ * Purpose:     ColourTrans operations
+ * Author:      Gerph
+ * Date:        26 Apr 2026
+ ******************************************************************/
+
+#include "swis.h"
+
+#include "colourtrans.h"
+
+
+/*************************************************** Gerph *********
+ Function:      colourtrans_gettablesize
+ Description:   Read the size of a pixel translation table for a translation
+ Parameters:    src_mode = mode to convert from (or -1 for current mode, or 256 for sprite pointer)
+                src_palette = palette to use, or pointer to sprite (or -1 for current palette)
+                dst_mode = mode to convert to (or -1 for current mode, or 256 for sprite pointer)
+                dst_palette = palette to use, or pointer to sprite (or -1 for current palette)
+                flags = the flags for the conversion
+ Returns:       size of table required, or -1 if anything went wrong
+ ******************************************************************/
+int colourtrans_gettablesize(uint32_t src_mode, void *src_palette,
+                             uint32_t dst_mode, void *dst_palette,
+                             uint32_t flags)
+{
+    _kernel_oserror *err;
+    uint32_t sizereq = 0;
+    err = _swix(ColourTrans_GenerateTable, _INR(0, 7)|_OUT(4),
+                                           src_mode, src_palette,
+                                           dst_mode, dst_palette,
+                                           0, /* Return size of buffer */
+                                           flags, /* Flags */
+                                           0, 0,
+                                           &sizereq);
+    if (err)
+        return -1;
+    return sizereq;
+}
+
+
+/*************************************************** Gerph *********
+ Function:      colourtrans_generatetable
+ Description:   Generate a pixel translation table into the output
+ Parameters:    src_mode = mode to convert from (or -1 for current mode, or 256 for sprite pointer)
+                src_palette = palette to use, or pointer to sprite (or -1 for current palette)
+                dst_mode = mode to convert to (or -1 for current mode, or 256 for sprite pointer)
+                dst_palette = palette to use, or pointer to sprite (or -1 for current palette)
+                output -> the buffer to write to
+                flags = the flags for the conversion
+                colourmap_func-> the function for mapping colours
+                colourmap->ws = the R12 value for mapping colours
+ Returns:       true if generated; false if failed
+ ******************************************************************/
+bool colourtrans_generatetable(uint32_t src_mode, void *src_palette,
+                               uint32_t dst_mode, void *dst_palette,
+                               void *output,
+                               uint32_t flags,
+                               void *colourmap_func,
+                               void *colourmap_ws)
+{
+    _kernel_oserror *err;
+    err = _swix(ColourTrans_GenerateTable, _INR(0, 7),
+                                           src_mode, src_palette,
+                                           dst_mode, dst_palette,
+                                           output,
+                                           flags, /* Flags */
+                                           colourmap_func, colourmap_ws);
+    if (err)
+        return false;
+    return true;
+}
