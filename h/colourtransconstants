@@ -8,6 +8,9 @@
 #ifndef COLOURTRANSCONSTANTS_H
 #define COLOURTRANSCONSTANTS_H
 
+/* A pixel translation table as returned from ColourTrans */
+typedef void *pixtrans_t;
+
 #define ColourTrans_CurrentPalette      -1
 #define ColourTrans_DefaultPalette      0
 

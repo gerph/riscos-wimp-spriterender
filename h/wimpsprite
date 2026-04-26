@@ -12,6 +12,8 @@
 
 #include "GContext/gcontext.h"
 
+#include "scale.h"
+
 typedef struct wimpgraphics_s {
     int log2bpp;    /* Depth as log2 of Bits Per Pixel */
     int xpixel;     /* OS units for an X pixel */
@@ -30,6 +32,14 @@ typedef struct wimpsprite_s {
     colour_t window_background;
     colour_t selection_colour;
 } wimpsprite_t;
+
+
+typedef struct wimppixtrans_s {
+    int32_t plot_action;
+    void *pixtrans;
+    /* FIXME: Include Colourmapping descriptor */
+    /* Actual pixtrans data would live here */
+} wimppixtrans_t;
 
 
 typedef struct eigenfactors_s {
@@ -64,5 +74,39 @@ wimpsprite_t *wimpsprite_create(wimpgraphics_t *graphics, sprite_t *sprite,
  Returns:       a width and height for the bounds
  ******************************************************************/
 bounds_t wimpsprite_getsize(wimpsprite_t *wsprite);
+
+
+/*************************************************** Gerph *********
+ Function:      wimpsprite_getscale
+ Description:   Read the scale factors to use for a given sprite
+ Parameters:    wsprite-> the sprite we want to get the scaling of
+ Returns:       the scale factors to use
+ ******************************************************************/
+scale_t wimpsprite_getscale(wimpsprite_t *wsprite);
+
+/*************************************************** Gerph *********
+ Function:      wimpsprite_getpixtrans
+ Description:   Read a pixel translation table for the sprite
+ Parameters:    wsprite-> the sprite we wish to render
+ Returns:       pointer to the wimppixtrans_t for the table, OR NULL if failed
+ ******************************************************************/
+wimppixtrans_t *wimpsprite_getpixtrans(wimpsprite_t *wsprite);
+
+/*************************************************** Gerph *********
+ Function:      wimpsprite_freepixtrans
+ Description:   Free the allocated pixel transformation
+ Parameters:    wpixtrans-> the wimp pix trans we wish to free
+ Returns:       None
+ ******************************************************************/
+void wimpsprite_freepixtrans(wimppixtrans_t *wpixtrans);
+
+
+/*************************************************** Gerph *********
+ Function:      wimpsprite_render
+ Description:   Render a given sprite to a position, possibly tiled.
+ Parameters:    wsprite-> the sprite we wish to render
+ Returns:       pointer to error, or NULL if successful
+ ******************************************************************/
+_kernel_oserror *wimpsprite_render(wimpsprite_t *wsprite, int x0, int y0, bool is_tiled);
 
 #endif

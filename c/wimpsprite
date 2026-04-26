@@ -42,6 +42,20 @@ bool sprite_haspalette(sprite_t *sprite)
     return false;
 }
 
+_kernel_oserror *sprite_tile(sprite_t *sprite, int x0, int y0,
+                             scale_t scale, int plot_action,
+                             pixtrans_t *pixtrans)
+{
+    return NULL;
+}
+_kernel_oserror *sprite_render(sprite_t *sprite, int x0, int y0,
+                               scale_t scale, int plot_action,
+                               pixtrans_t *pixtrans)
+{
+    return NULL;
+}
+
+
 
 int colourtrans_gettablesize(uint32_t src_mode, void *src_palette,
                              uint32_t dst_mode, void *dst_palette,
@@ -60,7 +74,10 @@ bool colourtrans_generatetable(uint32_t src_mode, void *src_palette,
     return true;
 }
 
-
+void wimpgraphics_apply_clip(wimpgraphics_t *graphics)
+{
+    /* FIXME: */
+}
 
 
 
@@ -170,13 +187,6 @@ scale_t wimpsprite_getscale(wimpsprite_t *wsprite)
     return scale;
 }
 
-typedef struct wimppixtrans_s {
-    int32_t plot_action;
-    void *pixtrans;
-    /* FIXME: Include Colourmapping descriptor */
-    /* Actual pixtrans data would live here */
-} wimppixtrans_t;
-
 
 /*************************************************** Gerph *********
  Function:      wimpsprite_getpixtrans
@@ -253,22 +263,40 @@ wimppixtrans_t *wimpsprite_getpixtrans(wimpsprite_t *wsprite)
 }
 
 
+/*************************************************** Gerph *********
+ Function:      wimpsprite_freepixtrans
+ Description:   Free the allocated pixel transformation
+ Parameters:    wpixtrans-> the wimp pix trans we wish to free
+ Returns:       None
+ ******************************************************************/
+void wimpsprite_freepixtrans(wimppixtrans_t *wpixtrans)
+{
+    if (wpixtrans)
+    {
+        /* FIXME: We would decrement the usage count and free here if necessary in the future */
+        free(wpixtrans);
+    }
+}
 
-/*
-    def render(self, x0, y0, is_tiled=False):
-        scale = self.get_scale()
-        (pixtrans, plot_action) = self.get_pixtrans()
 
-        plot_action |= spriteop.SpritePlotAction_UseMask
-        try:
-            # FIXME: Deep sprite rendering not supported
-            self.graphics.apply_clip()
-            if is_tiled:
-                self.sprite.tile(x0, y0, scale, plot_action=plot_action, pixtrans=pixtrans)
-            else:
-                self.sprite.render(x0, y0, scale, plot_action=plot_action, pixtrans=pixtrans)
-        finally:
-            if pixtrans:
-                pixtrans.free()
 
-*/
+/*************************************************** Gerph *********
+ Function:      wimpsprite_render
+ Description:   Render a given sprite to a position, possibly tiled.
+ Parameters:    wsprite-> the sprite we wish to render
+ Returns:       pointer to error, or NULL if successful
+ ******************************************************************/
+_kernel_oserror *wimpsprite_render(wimpsprite_t *wsprite, int x0, int y0, bool is_tiled)
+{
+    scale_t scale = wimpsprite_getscale(wsprite);
+    wimppixtrans_t *wpixtrans = wimpsprite_getpixtrans(wsprite);
+    int plot_action = wpixtrans->plot_action | SpritePlotAction_UseMask;
+    _kernel_oserror *err;
+
+    wimpgraphics_apply_clip(wsprite->graphics);
+    if (is_tiled)
+        err = sprite_tile(wsprite->sprite, x0, y0, scale, plot_action, wpixtrans->pixtrans);
+    else
+        err = sprite_render(wsprite->sprite, x0, y0, scale, plot_action, wpixtrans->pixtrans);
+    return err;
+}
