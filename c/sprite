@@ -1,0 +1,148 @@
+/*******************************************************************
+ * File:        sprite
+ * Purpose:     Sprite operations
+ * Author:      Gerph
+ * Date:        26 Apr 2026
+ ******************************************************************/
+
+#include <stdlib.h>
+
+#include "swis.h"
+
+#include "riscos/ModeVariables.h"
+#include "riscos/Sprite.h"
+#include "sprite.h"
+
+
+/*************************************************** Gerph *********
+ Function:      sprite_getsize
+ Description:   Read the size of a sprite, in OS units
+ Parameters:    sprite-> the sprite to read (as a pointer, not a name)
+ Returns:       bounds (as width and height)
+ ******************************************************************/
+bounds_t sprite_getsize(sprite_t *sprite)
+{
+    bounds_t bounds = { 0, 0 };
+    uint32_t mode;
+    _kernel_oserror *err;
+    err = _swix(OS_SpriteOp, _INR(0,2)|_OUTR(3,4)|_OUT(6),
+                             0x200 + SpriteReason_ReadSpriteSize, 256, sprite,
+                             &bounds.width, &bounds.height, &mode);
+    if (err)
+    {
+        bounds.width = 0;
+        bounds.height = 0;
+    }
+    return bounds;
+}
+
+/*************************************************** Gerph *********
+ Function:      sprite_geteigenfactors
+ Description:   Read the eigenfactors for a given sprite
+ Parameters:    sprite-> the sprite to read the factors for
+ Returns:       eigenfactors_t object
+ ******************************************************************/
+eigenfactors_t sprite_geteigenfactors(sprite_t *sprite)
+{
+    eigenfactors_t eigens = { 0, 0 };
+    _kernel_oserror *err;
+
+    err = _swix(OS_ReadModeVariable, _INR(0,1)|_OUT(2),
+                                     sprite, ModeVariable_XEigFactor,
+                                     &eigens.xeig);
+    /* FIXME: We're not handling C set */
+    if (err)
+        eigens.xeig = 1;
+
+    err = _swix(OS_ReadModeVariable, _INR(0,1)|_OUT(2),
+                                     sprite, ModeVariable_YEigFactor,
+                                     &eigens.yeig);
+    /* FIXME: We're not handling C set */
+    if (err)
+        eigens.yeig = 1;
+
+    return eigens;
+}
+
+#define sprite_address(sprite) (sprite)
+
+/*************************************************** Gerph *********
+ Function:      sprite_log2bpp
+ Description:   Read the depth of the sprite as log2bits per pixel
+ NOTE:          Does not handle modern sprite types
+ Parameters:    var = value
+ Returns:       none
+ ******************************************************************/
+int sprite_log2bpp(sprite_t *sprite)
+{
+    int32_t log2bpp = 0;
+    _kernel_oserror *err;
+
+    err = _swix(OS_ReadModeVariable, _INR(0,1)|_OUT(2),
+                                     sprite, ModeVariable_Log2BPP,
+                                     &log2bpp);
+    /* FIXME: We're not handling C set */
+    if (err)
+        log2bpp = 0;
+
+    return log2bpp;
+}
+
+/*************************************************** Gerph *********
+ Function:      sprite_haspalette
+ Description:   Does the sprite have a palette?
+ Parameters:    sprite-> the sprite to check
+ Returns:       true if there is a palette; false if not.
+ ******************************************************************/
+bool sprite_haspalette(sprite_t *sprite)
+{
+    /* FIXME: Shouldn't I have called the OS_SpriteOp call to check the palette existence ? */
+    if ( ((uint8_t*)sprite->offset_bitmap) == ((uint8_t*)sprite) + sizeof(sprite) )
+    {
+        /* The bitmap starts after the header, so there isn't a palette */
+        return false;
+    }
+    return true;
+}
+
+/*************************************************** Gerph *********
+ Function:      sprite_tile
+ Description:   Tile sprites on to the screen
+ Parameters:    sprite-> the sprite to render
+                x0, y0 = bottom left
+                scale = the scale factor to use (may be identity)
+                plot_action = action for rendering (may include mask bit and wide pixtrans bits)
+                pixtrans-> the pixel translation table to use
+ Returns:       pointer to error, or NULL if successful
+ ******************************************************************/
+_kernel_oserror *sprite_tile(sprite_t *sprite, int x0, int y0,
+                             scale_t scale, int plot_action,
+                             pixtrans_t *pixtrans)
+{
+    return NULL;
+}
+
+
+/*************************************************** Gerph *********
+ Function:      sprite_render
+ Description:   Render a sprite on to the screen
+ Parameters:    sprite-> the sprite to render
+                x0, y0 = bottom left
+                scale = the scale factor to use (may be identity)
+                plot_action = action for rendering (may include mask bit and wide pixtrans bits)
+                pixtrans-> the pixel translation table to use
+ Returns:       pointer to error, or NULL if successful
+ ******************************************************************/
+_kernel_oserror *sprite_render(sprite_t *sprite, int x0, int y0,
+                               scale_t scale, int plot_action,
+                               pixtrans_t *pixtrans)
+{
+    _kernel_oserror *err = _swix(OS_SpriteOp, _INR(0, 7),
+                                 0x200 + SpriteReason_PutSpriteScaled,
+                                 256, sprite,
+                                 x0, y0,
+                                 plot_action,
+                                 &scale, pixtrans);
+    return err;
+}
+

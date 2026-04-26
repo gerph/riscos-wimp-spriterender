@@ -36,7 +36,8 @@ LIBS       = ${CLIB} C:GContext.o.libGContext
 OBJS       = o.main \
 		     o.wimpsprite \
 		   	 o.scale \
-		   	 o.palette
+		   	 o.palette \
+		   	 o.sprite
 
 # Space separated list of XML files for building documentation.
 #DOCSRC = <prm-in-xml-sources>

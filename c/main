@@ -7,12 +7,32 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "swis.h"
+
+#include "riscos/Sprite.h"
+
 #include "VersionNum"
+
+#include "sprite.h"
+
 
 int main(int argc, char *argv[])
 {
     printf("WimpSpriteRender " Module_FullVersionAndDate "\n");
-    printf("Syntax: *WimpSpriteRender\n");
+
+    {
+        /* I want to get a sprite */
+        sprite_t *sprite;
+        _kernel_oserror *err;
+        err = _swix(Wimp_SpriteOp, _INR(0, 2)|_OUT(2),
+                                   0x100 + SpriteReason_SelectSprite, 0, "file_fff", &sprite);
+        if (err)
+        {
+            printf("Could not find sprite: %s\n", err->errmess);
+            exit(1);
+        }
+        printf("Found the sprite at %p\n", sprite);
+    }
 
     exit(EXIT_SUCCESS);
 }

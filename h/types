@@ -1,0 +1,26 @@
+/*******************************************************************
+ * File:        types
+ * Purpose:     General types
+ * Author:      Gerph
+ * Date:        26 Apr 2026
+ ******************************************************************/
+
+#ifndef TYPES_H
+#define TYPES_H
+
+#include "GContext/gcontext.h"
+
+typedef struct wimpgraphics_s {
+    int log2bpp;    /* Depth as log2 of Bits Per Pixel */
+    int xpixel;     /* OS units for an X pixel */
+    int ypixel;     /* OS units for a Y pixel */
+} wimpgraphics_t;
+
+
+typedef struct eigenfactors_s {
+    uint8_t xeig;
+    uint8_t yeig;
+} eigenfactors_t;
+
+
+#endif

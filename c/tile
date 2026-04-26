@@ -1,0 +1,262 @@
+/*******************************************************************
+ * File:     tile
+ * Purpose:  Simple tiling algorithm
+ * Author:   Justin Fletcher
+ * Date:     09 Jul 2006
+ ******************************************************************/
+
+#include <stdlib.h>
+#include <stdio.h>
+#include "swis.h"
+
+#include "riscos/ModeVariables.h"
+#include "muldiv.h"
+
+#include "GContext/gcontext.h"
+#include "scale.h"
+
+/* #define DEBUG */
+
+#ifdef DEBUG
+#define dprintf if (1) printf
+#else
+#define dprintf if (0) printf
+#endif
+
+/* x and y are the bottom left position
+   returns 1 if the tile operation should terminate */
+typedef int tile_f(void *private, int x, int y, bounds_t *box);
+
+
+/*************************************************** Gerph *********
+ Function:     tile
+ Description:  Simple tiling algorithm
+ Parameters:   func-> the function to call for tiling
+               funcpriv = private value to pass to function
+               xo,yo = the origin position
+               box-> the bounding box to tile into (expected to
+                     be initialised as a graphics window)
+ Returns:      none
+ ******************************************************************/
+static void tile(tile_f func, void *funcpriv,
+                 int xo, int yo, int w, int h, bounds_t *box)
+{
+  int xs,ys,xe,ye;
+  if (w <= 0 || h <= 0)
+    return;
+
+  /* Work out the origin as a relative position */
+  xo = xo % w;  yo = yo % h;
+  if (xo<0) xo+=w;
+  if (yo<0) yo+=h;
+
+  /* Work out the start relative to the bounding box */
+  xs = box->x0 - (box->x0 % w);
+  ys = box->y0 - (box->y0 % h);
+
+  if (xo != 0) xs -= w;
+  if (yo != 0) ys -= h;
+
+  xs += xo;
+  ys += yo;
+  xe = box->x1;
+  ye = box->y1;
+
+  /* Now do the plotting of each of them */
+  {
+    int y;
+
+    /* dprintf("Tiling %i,%i - %i,%i in steps of %i,%i\n", */
+            /* xs,ys,xe,ye,w,h); */
+    for (y=ys; y<ye; y+=h)
+    {
+      int x;
+      for (x=xs; x<xe; x+=w)
+      {
+        if (func(funcpriv, x, y, box))
+          return; /* They wanted to be stopped */
+      }
+    }
+  }
+}
+
+#ifdef TEST
+static scale_t identityscale = { 1,1,1,1 };
+#endif
+
+#define TILE_SPRITEISPOINTER  (1<<0)
+
+typedef struct renderdata_s {
+  int xeig, yeig;
+  void *sprarea;
+  void *spr;
+  int spriteop;
+  int action;
+  void *scale;
+  void *trans;
+  _kernel_oserror *err;
+} renderdata_t;
+
+/*************************************************** Gerph *********
+ Function:     tile_render
+ Description:  Plot one instance of the tiled image
+ Parameters:   priv-> our render data
+               x,y = bottom left corner
+               box-> the bounding box to plot to
+ Returns:      1 if we should stop tiling, 0 if keep going
+ ******************************************************************/
+int tile_render(void *priv, int x, int y, bounds_t *box)
+{
+  renderdata_t *rd = priv;
+  /* dprintf("Rendering at %i,%i\n", x,y); */
+  rd->err = _swix(OS_SpriteOp, _INR(0,7),
+                               rd->spriteop,
+                               rd->sprarea, rd->spr,
+                               x<<rd->xeig,
+                               y<<rd->yeig,
+                               rd->action,
+                               rd->scale, rd->trans);
+  if (rd->err)
+    return 1;
+  return 0;
+}
+
+/*************************************************** Gerph *********
+ Function:     tile_sprite
+ Description:  Tile a given sprite
+ Parameters:   flags = the flags to use
+               sprarea-> the sprite area to use
+               spr-> the sprite to use
+               x,y = the origin coordinates
+               action = the plot action to use
+               scale-> the scale block
+               trans-> the pixel translation table
+ Returns:      pointer to error, if any
+ ******************************************************************/
+_kernel_oserror *tile_sprite(unsigned long flags,
+                             void *sprarea, void *spr,
+                             int x, int y, int action,
+                             scale_t *scale,
+                             void *trans)
+{
+  int width, height, mode, xeig, yeig;
+  unsigned long errflags;
+  _kernel_oserror *err;
+  int spriteop;
+
+  spriteop = 0x100;
+  if (flags & TILE_SPRITEISPOINTER)
+    spriteop = 0x200;
+
+  err = _swix(OS_SpriteOp, _INR(0,2)|_OUTR(3,4)|_OUT(6),
+                           spriteop + 40, sprarea, spr,
+                           &width, &height, &mode);
+  if (err)
+    return err;
+
+  dprintf("Sprite is %i x %i in mode &%x\n", width, height, mode);
+
+  /* Work out the scaling */
+  if (scale->xdiv == 0 || scale->ydiv == 0)
+    scale = NULL; /* Just use a 'safe' scaling */
+
+  /* Scale the rendered size */
+  if (scale == NULL)
+  {
+    /* width and height already ok */
+  }
+  else
+  {
+    /* FIXME: use scale_apply ? */
+    width  = muldiv(width, scale->xmult, scale->xdiv);
+    height = muldiv(height, scale->ymult, scale->ydiv);
+  }
+
+  dprintf("Scaled size = %i x %i\n", width, height);
+
+  /* Set up the bounding box and at the same time get the current
+     mode eigen factors */
+  {
+    bounds_t box;
+    int vduvarsout[6];
+    int vduvarsin[7];
+    vduvarsin[0] = 0x80;
+    vduvarsin[1] = 0x81;
+    vduvarsin[2] = 0x82;
+    vduvarsin[3] = 0x83;
+    vduvarsin[4] = ModeVariable_XEigFactor;
+    vduvarsin[5] = ModeVariable_YEigFactor;
+    vduvarsin[6] = -1;
+
+    err = _swix(OS_ReadVduVariables, _INR(0,1), vduvarsin,
+                                                vduvarsout);
+    if (err)
+      return err;
+    box.x0 = vduvarsout[0];
+    box.y0 = vduvarsout[1];
+    box.x1 = vduvarsout[2] + 1; /* Exclusive */
+    box.y1 = vduvarsout[3] + 1; /* Exclusive */
+    xeig = vduvarsout[4];
+    yeig = vduvarsout[5];
+
+    dprintf("Graphics bounds = %i,%i - %i,%i\n", box.x0, box.y0,
+                                                 box.x1, box.y1);
+
+    dprintf("Current mode eigens = %i, %i\n", xeig, yeig);
+
+    dprintf("Scaled back = %i x %i\n", width, height);
+
+    if (width <= 0 || height <= 0)
+      return NULL; /* If there's nothing to draw, don't bother */
+
+    /* Now set up the parameters for the tiling */
+    {
+      renderdata_t rd;
+
+      rd.xeig = xeig;
+      rd.yeig = yeig;
+      rd.sprarea = sprarea;
+      rd.spr = spr;
+      rd.spriteop = spriteop + 52; /* Paint sprite scaled */
+      rd.action = action;
+      rd.scale = scale;
+      rd.trans = trans;
+      rd.err = NULL; /* No error yet */
+
+#ifndef TEST
+#define tile_render tile_renderfunc
+#endif
+      tile(tile_render, (void*)&rd, x>>xeig, y>>yeig,
+                                    width, height, &box);
+
+      return rd.err;
+    }
+  }
+}
+
+#ifdef TEST
+#include "WimpExtend.h"
+int main(void)
+{
+  _kernel_oserror *err;
+  void *sprarea, *spr;
+  scale_t scale = { 4,4,3,3 };
+  err = _swix(Wimp_Extend, _INR(0,2) | _OUTR(1,2),
+                           WimpExtend_GetSpriteAddress,
+                           1, "file_fff",
+                           &sprarea, &spr);
+  if (err)
+    goto fail;
+
+  err = tile_sprite(TILE_SPRITEISPOINTER, sprarea, spr,
+                    16,0, 8, &scale, NULL);
+  if (err)
+    goto fail;
+
+  return EXIT_SUCCESS;
+
+fail:
+  printf("FAILED: %s\n", err->errmess);
+  return EXIT_FAILURE;
+}
+#endif

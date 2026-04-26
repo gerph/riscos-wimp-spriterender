@@ -18,43 +18,6 @@
 
 /* STUBBY! */
 
-bounds_t sprite_getsize(sprite_t *sprite)
-{
-    bounds_t bounds = { 64, 64 };
-    return bounds;
-}
-
-eigenfactors_t sprite_geteigenfactors(sprite_t *sprite)
-{
-    eigenfactors_t eigens = { 0, 0 };
-    return eigens;
-}
-
-#define sprite_address(sprite) (sprite)
-
-int sprite_log2bpp(sprite_t *sprite)
-{
-    return 1;
-}
-
-bool sprite_haspalette(sprite_t *sprite)
-{
-    return false;
-}
-
-_kernel_oserror *sprite_tile(sprite_t *sprite, int x0, int y0,
-                             scale_t scale, int plot_action,
-                             pixtrans_t *pixtrans)
-{
-    return NULL;
-}
-_kernel_oserror *sprite_render(sprite_t *sprite, int x0, int y0,
-                               scale_t scale, int plot_action,
-                               pixtrans_t *pixtrans)
-{
-    return NULL;
-}
-
 
 
 int colourtrans_gettablesize(uint32_t src_mode, void *src_palette,
