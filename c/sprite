@@ -5,6 +5,7 @@
  * Date:        26 Apr 2026
  ******************************************************************/
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "swis.h"
