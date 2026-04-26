@@ -36,6 +36,10 @@ jobs:
 
       # Test the command
       - echo
+      - echo *** Load sprites into the wimp pool ***
+      - IconSprites Sprites22
+
+      - echo
       - echo *** Run command ***
       - aif32.WimpSpriteRender
 
