@@ -16,6 +16,17 @@
 #include "palette.h"
 #include "scale.h"
 #include "colourtrans.h"
+#include "colourmap.h"
+
+
+//#define DEBUG
+
+#ifdef DEBUG
+#define dprintf if (1) printf
+#else
+#define dprintf if (0) printf
+#endif
+
 
 /* STUBBY! */
 
@@ -173,9 +184,11 @@ wimppixtrans_t *wimpsprite_getpixtrans(wimpsprite_t *wsprite)
     if (wsprite->is_selected || wsprite->is_shaded)
     {
         /* Apply the selection / shading code */
-        /* FIXME: This should be implemented as a colourmap descriptor */
-        //colourmap_func = wimpcolourmap_apply(wsprite->is_selected, wsprite->is_shaded, wsprite->window_background);
-        // flags |= ColourTrans_GivenTransferFn
+        colourmapdescriptor_t *colourmap;
+        colourmap = colourmap_setup(wsprite->is_selected, wsprite->is_shaded, wsprite->window_background);
+        colourmap_func = colourmap->func;
+        colourmap_ws = colourmap->pw;
+        flags |= ColourTrans_GivenTransferFn;
     }
 
     table_size = colourtrans_gettablesize(src_mode, src_palette,
@@ -189,12 +202,12 @@ wimppixtrans_t *wimpsprite_getpixtrans(wimpsprite_t *wsprite)
 
     wpixtrans->pixtrans = (char *)wpixtrans + sizeof(*wpixtrans);
 
+    dprintf("ColourTrans_GenerateTable for sprite %p, with flags &%x, colourmap %p/%p\n", src_palette, flags, colourmap_func, colourmap_ws);
     if (!colourtrans_generatetable(src_mode, (void*)src_palette,
                                    ColourTrans_CurrentMode, (void*)ColourTrans_CurrentPalette,
                                    wpixtrans->pixtrans,
                                    flags,
-                                   colourmap_func,
-                                   colourmap_ws))
+                                   colourmap_ws, colourmap_func))
     {
         free(wpixtrans);
         return NULL;

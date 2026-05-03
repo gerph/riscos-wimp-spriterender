@@ -28,6 +28,10 @@
 #define dprintf if (0) printf
 #endif
 
+void *module_ws[4] = {0};
+void *module_pwvalue = module_ws;
+void *module_pw = &module_pwvalue;
+
 
 void help(void)
 {
@@ -56,8 +60,13 @@ void test_allforms(wimpgraphics_t *graphics)
 {
     sprite_t *sprite;
     int i;
+    gcontext_t *gcontext = gcontext_initvdu(2);
 
-    sprite = find_sprite("file_fff");
+    gcontext->rectangle_fill(gcontext, 0xDDDDDD00,
+                             128 - 32, 480 + 128 + 32,
+                             128 + 128 * 4 + 32, 480 - 128 * 3 - 32);
+
+    sprite = find_sprite("file_ff9");
 
     for (i=0; i<16; i++)
     {
@@ -68,7 +77,9 @@ void test_allforms(wimpgraphics_t *graphics)
         wimpsprite_t *wsprite = wimpsprite_create(graphics, sprite,
                                                   is_halfsize, is_unscaled,
                                                   is_selected, is_shaded,
-                                                  COLOUR_RGB(0,0,0), COLOUR_RGB(96, 192, 96));
+                                                  COLOUR_RGB(0xDD,0xDD,0xDD), /* Background colour */
+                                                  COLOUR_RGB(96, 192, 96) /* Selection colour */
+                                                 );
         dprintf("Created a wimpsprite: %p\n", wsprite);
 
         wimpsprite_render(wsprite, 128 + 128 * (i & 3), 480 - 128 * (i>>2), false);
@@ -99,6 +110,9 @@ int main(int argc, char *argv[])
 {
     wimpgraphics_t *graphics = wimpgraphics_create();
     char *cmd;
+
+    dprintf("module_pw = %p\n", module_pw);
+    dprintf("module_ws = %p\n", module_ws);
 
     if (graphics == NULL)
     {

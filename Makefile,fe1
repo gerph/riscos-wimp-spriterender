@@ -40,6 +40,8 @@ OBJS       = o.main \
 		   	 o.sprite \
 		   	 o.tile \
 		   	 o.wimpgraphics \
+		   	 o.colourmap \
+		   	 o.colourmap_user_shim \
 		   	 o.colourtrans
 
 # Space separated list of XML files for building documentation.

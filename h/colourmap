@@ -1,0 +1,55 @@
+/*******************************************************************
+ * File:        colourmap
+ * Purpose:     Set up colour mapping functions for transformed images
+ * Author:      Gerph
+ * Date:        03 May 2026
+ ******************************************************************/
+
+#ifndef COLOURMAP_H
+#define COLOURMAP_H
+
+#include <stdbool.h>
+
+#include "GContext/gcontext.h"
+
+
+typedef struct colourmapdescriptor_s {
+    void *pw;
+    void *func;
+} colourmapdescriptor_t;
+
+
+typedef enum selectalgorithm_s {
+    sela_invert
+} selectalgorithm_t;
+
+typedef enum shadealgorithm_s {
+    shaa_greyblend,
+    shaa_grey,
+    shaa_backgroundblend
+} shadealgorithm_t;
+
+extern selectalgorithm_t select_algorithm;
+extern shadealgorithm_t shade_algorithm;
+
+
+
+/*************************************************** Gerph *********
+ Function:      colourmap_setup
+ Description:   Create us a colour map descriptor for the sprite rendering
+ Parameters:    is_selected = true if we are selected
+                is_shaded = true if we are shaded
+                bgcolour = the colour to blend to
+ Returns:       colour map descriptor to use
+
+ WARNING:       There is only ONE descriptor at present.
+ ******************************************************************/
+colourmapdescriptor_t *colourmap_setup(bool is_selected,
+                                       bool is_shaded,
+                                       colour_t bgcolour);
+
+
+/* Our assembler function that handles the ColourMap */
+extern void (*ColourMap_Entry)(void);
+
+#endif

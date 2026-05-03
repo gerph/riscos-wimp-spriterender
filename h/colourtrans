@@ -35,15 +35,14 @@ int colourtrans_gettablesize(uint32_t src_mode, void *src_palette,
                 dst_palette = palette to use, or pointer to sprite (or -1 for current palette)
                 output -> the buffer to write to
                 flags = the flags for the conversion
+                colourmap_ws = the R12 value for mapping colours
                 colourmap_func-> the function for mapping colours
-                colourmap->ws = the R12 value for mapping colours
  Returns:       true if generated; false if failed
  ******************************************************************/
 bool colourtrans_generatetable(uint32_t src_mode, void *src_palette,
                                uint32_t dst_mode, void *dst_palette,
                                void *output,
                                uint32_t flags,
-                               void *colourmap_func,
-                               void *colourmap_ws);
-
+                               void *colourmap_ws,
+                               void *colourmap_func);
 #endif

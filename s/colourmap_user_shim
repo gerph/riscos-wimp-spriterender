@@ -1,0 +1,41 @@
+
+        AREA        |C$$code|, CODE, READONLY
+
+        EXPORT      ColourMap_Entry
+
+        IMPORT      |_Lib$Reloc$Off$DP|
+
+ColourMap_Entry
+; => r0 = the &BBGGRR00
+; <= r0 = the transformed colour
+
+; Entered in SVC mode.
+        STMFD       sp!, {r1-r3, r10-r12, lr}
+; fake entry for SVC mode
+        MOV         r11, #0                         ; Frame pointer = 0 (start of entry into user code)
+
+        MOV         r10, sp, LSR #20                ; Megabyte align the stack limit
+        MOV         r10, r10, LSL #20
+
+        LDMIA       r10,{r4,r5}
+        LDR         r12,[r12]
+        LDMIB       r12,{r11,r12}
+        STMIA       r10,{r11,r12}
+
+; This is equivalent of 'ADD r10, r10, #0' + |_Lib$Reloc$Off$DP|
+        DCD         |_Lib$Reloc$Off$DP| + &E28AA000
+; end entry sequence
+
+        IMPORT      colourmap_transform
+        BL          colourmap_transform             ; The actual C call
+
+; restore exit sequence
+; This is equivalent of 'SUB r10, r10, #0' + |_Lib$Reloc$Off$DP|
+        DCD         |_Lib$Reloc$Off$DP| + &E24AA000
+        STMIA       r10,{r4,r5}
+; end exit sequence
+
+        CMP         r0, r0
+        LDMFD       sp!, {r1-r3, r10-r12, pc}
+
+        END
