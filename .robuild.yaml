@@ -40,8 +40,18 @@ jobs:
       - IconSprites Sprites22
 
       - echo
-      - echo *** Run command ***
-      - aif32.WimpSpriteRender
+      - echo *** Run command (allforms) ***
+      # Use Mode 28, which has more colours
+      - echo <22><28>
+      - aif32.WimpSpriteRender allforms
+      - ScreenSave -native Install.AllForms/png
+
+      - echo
+      - echo *** Run command (tile) ***
+      # Clear screen
+      - echo <12>
+      - aif32.WimpSpriteRender tile
+      - ScreenSave -native Install.Tile/png
 
 
       # Done!

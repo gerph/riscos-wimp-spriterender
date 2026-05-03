@@ -10,12 +10,14 @@
 #include "swis.h"
 
 #include "riscos/ModeVariables.h"
-#include "muldiv.h"
+//#include "muldiv.h"
+#define muldiv(value, mult, div) ((value) * (mult) / (div))
 
 #include "GContext/gcontext.h"
 #include "scale.h"
+#include "tile.h"
 
-/* #define DEBUG */
+#define DEBUG
 
 #ifdef DEBUG
 #define dprintf if (1) printf
@@ -23,9 +25,10 @@
 #define dprintf if (0) printf
 #endif
 
+
 /* x and y are the bottom left position
    returns 1 if the tile operation should terminate */
-typedef int tile_f(void *private, int x, int y, bounds_t *box);
+typedef int tile_f(void *private, int x, int y, bbox_t *box);
 
 
 /*************************************************** Gerph *********
@@ -39,7 +42,7 @@ typedef int tile_f(void *private, int x, int y, bounds_t *box);
  Returns:      none
  ******************************************************************/
 static void tile(tile_f func, void *funcpriv,
-                 int xo, int yo, int w, int h, bounds_t *box)
+                 int xo, int yo, int w, int h, bbox_t *box)
 {
   int xs,ys,xe,ye;
   if (w <= 0 || h <= 0)
@@ -66,8 +69,8 @@ static void tile(tile_f func, void *funcpriv,
   {
     int y;
 
-    /* dprintf("Tiling %i,%i - %i,%i in steps of %i,%i\n", */
-            /* xs,ys,xe,ye,w,h); */
+    dprintf("Tiling %i,%i - %i,%i in steps of %i,%i\n",
+            xs,ys,xe,ye,w,h);
     for (y=ys; y<ye; y+=h)
     {
       int x;
@@ -83,8 +86,6 @@ static void tile(tile_f func, void *funcpriv,
 #ifdef TEST
 static scale_t identityscale = { 1,1,1,1 };
 #endif
-
-#define TILE_SPRITEISPOINTER  (1<<0)
 
 typedef struct renderdata_s {
   int xeig, yeig;
@@ -105,10 +106,10 @@ typedef struct renderdata_s {
                box-> the bounding box to plot to
  Returns:      1 if we should stop tiling, 0 if keep going
  ******************************************************************/
-int tile_render(void *priv, int x, int y, bounds_t *box)
+int tile_render(void *priv, int x, int y, bbox_t *box)
 {
   renderdata_t *rd = priv;
-  /* dprintf("Rendering at %i,%i\n", x,y); */
+  dprintf("Rendering at %i,%i\n", x,y);
   rd->err = _swix(OS_SpriteOp, _INR(0,7),
                                rd->spriteop,
                                rd->sprarea, rd->spr,
@@ -140,7 +141,6 @@ _kernel_oserror *tile_sprite(unsigned long flags,
                              void *trans)
 {
   int width, height, mode, xeig, yeig;
-  unsigned long errflags;
   _kernel_oserror *err;
   int spriteop;
 
@@ -177,7 +177,7 @@ _kernel_oserror *tile_sprite(unsigned long flags,
   /* Set up the bounding box and at the same time get the current
      mode eigen factors */
   {
-    bounds_t box;
+    bbox_t box;
     int vduvarsout[6];
     int vduvarsin[7];
     vduvarsin[0] = 0x80;
@@ -223,9 +223,6 @@ _kernel_oserror *tile_sprite(unsigned long flags,
       rd.trans = trans;
       rd.err = NULL; /* No error yet */
 
-#ifndef TEST
-#define tile_render tile_renderfunc
-#endif
       tile(tile_render, (void*)&rd, x>>xeig, y>>yeig,
                                     width, height, &box);
 

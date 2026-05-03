@@ -6,6 +6,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
 
 #include "swis.h"
 
@@ -27,9 +29,76 @@
 #endif
 
 
+void help(void)
+{
+    printf("WimpSpriteRender " Module_FullVersionAndDate "\n");
+    printf("Syntax: *WimpSpriteRender allforms|tile\n");
+}
+
+sprite_t *find_sprite(const char *name)
+{
+    /* I want to get a sprite */
+    sprite_t *sprite;
+    _kernel_oserror *err;
+    err = _swix(Wimp_SpriteOp, _INR(0, 2)|_OUT(2),
+                               0x100 + SpriteReason_SelectSprite, 0, name, &sprite);
+    if (err)
+    {
+        printf("Could not find sprite: %s\n", err->errmess);
+        exit(1);
+    }
+    dprintf("Found the sprite at %p\n", sprite);
+    return sprite;
+}
+
+
+void test_allforms(wimpgraphics_t *graphics)
+{
+    sprite_t *sprite;
+    int i;
+
+    sprite = find_sprite("file_fff");
+
+    for (i=0; i<16; i++)
+    {
+        bool is_halfsize = (i & 1);
+        bool is_unscaled = (i & 2);
+        bool is_selected = (i & 4);
+        bool is_shaded = (i & 8);
+        wimpsprite_t *wsprite = wimpsprite_create(graphics, sprite,
+                                                  is_halfsize, is_unscaled,
+                                                  is_selected, is_shaded,
+                                                  COLOUR_RGB(0,0,0), COLOUR_RGB(96, 192, 96));
+        dprintf("Created a wimpsprite: %p\n", wsprite);
+
+        wimpsprite_render(wsprite, 128 + 128 * (i & 3), 480 - 128 * (i>>2), false);
+
+        /* FIXME: Destroy the wimpsprite */
+    }
+}
+
+void test_tile(wimpgraphics_t *graphics)
+{
+    sprite_t *sprite = find_sprite("tile_1r");
+    bool is_halfsize = false;
+    bool is_unscaled = false;
+    bool is_selected = false;
+    bool is_shaded = false;
+
+    wimpsprite_t *wsprite = wimpsprite_create(graphics, sprite,
+                                              is_halfsize, is_unscaled,
+                                              is_selected, is_shaded,
+                                              COLOUR_RGB(0,0,0), COLOUR_RGB(96, 192, 96));
+    dprintf("Created a wimpsprite: %p\n", wsprite);
+    wimpsprite_render(wsprite, 128, 480, true);
+    /* FIXME: Destroy the wimpsprite */
+}
+
+
 int main(int argc, char *argv[])
 {
     wimpgraphics_t *graphics = wimpgraphics_create();
+    char *cmd;
 
     if (graphics == NULL)
     {
@@ -37,38 +106,21 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    printf("WimpSpriteRender " Module_FullVersionAndDate "\n");
-
+    if (argc==1)
     {
-        /* I want to get a sprite */
-        sprite_t *sprite;
-        _kernel_oserror *err;
-        int i;
-        err = _swix(Wimp_SpriteOp, _INR(0, 2)|_OUT(2),
-                                   0x100 + SpriteReason_SelectSprite, 0, "file_fff", &sprite);
-        if (err)
-        {
-            printf("Could not find sprite: %s\n", err->errmess);
-            exit(1);
-        }
-        dprintf("Found the sprite at %p\n", sprite);
+        help();
+        exit(1);
+    }
 
-        for (i=0; i<16; i++)
-        {
-            bool is_halfsize = (i & 1);
-            bool is_unscaled = (i & 2);
-            bool is_selected = (i & 4);
-            bool is_shaded = (i & 8);
-            wimpsprite_t *wsprite = wimpsprite_create(graphics, sprite,
-                                                      is_halfsize, is_unscaled,
-                                                      is_selected, is_shaded,
-                                                      COLOUR_RGB(0,0,0), COLOUR_RGB(96, 192, 96));
-            dprintf("Created a wimpsprite: %p\n", wsprite);
+    cmd = argv[1];
 
-            wimpsprite_render(wsprite, 128 + 128 * (i & 3), 480 - 128 * (i>>2), false);
-
-            /* FIXME: Destroy the wimpsprite */
-        }
+    if (strcmp(cmd, "allforms") == 0)
+    {
+        test_allforms(graphics);
+    }
+    else if (strcmp(cmd, "tile") == 0)
+    {
+        test_tile(graphics);
     }
 
     exit(EXIT_SUCCESS);

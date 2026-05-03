@@ -1,0 +1,34 @@
+/*******************************************************************
+ * File:     tile
+ * Purpose:  Simple tiling algorithm
+ * Author:   Justin Fletcher
+ * Date:     09 Jul 2006
+ ******************************************************************/
+
+#ifndef TILE_H
+#define TILE_H
+
+#include "kernel.h"
+#include "scale.h"
+
+#define TILE_SPRITEISPOINTER  (1<<0)
+
+/*************************************************** Gerph *********
+ Function:     tile_sprite
+ Description:  Tile a given sprite
+ Parameters:   flags = the flags to use
+               sprarea-> the sprite area to use
+               spr-> the sprite to use
+               x,y = the origin coordinates
+               action = the plot action to use
+               scale-> the scale block
+               trans-> the pixel translation table
+ Returns:      pointer to error, if any
+ ******************************************************************/
+_kernel_oserror *tile_sprite(unsigned long flags,
+                             void *sprarea, void *spr,
+                             int x, int y, int action,
+                             scale_t *scale,
+                             void *trans);
+
+#endif

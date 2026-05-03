@@ -38,6 +38,7 @@ OBJS       = o.main \
 		   	 o.scale \
 		   	 o.palette \
 		   	 o.sprite \
+		   	 o.tile \
 		   	 o.wimpgraphics \
 		   	 o.colourtrans
 

@@ -13,7 +13,7 @@
 #include "riscos/ModeVariables.h"
 #include "riscos/Sprite.h"
 #include "sprite.h"
-
+#include "tile.h"
 
 //#define DEBUG
 
@@ -129,7 +129,21 @@ _kernel_oserror *sprite_tile(sprite_t *sprite, int x0, int y0,
                              scale_t scale, int plot_action,
                              pixtrans_t *pixtrans)
 {
-    return NULL;
+    _kernel_oserror *err = _swix(OS_SpriteOp, _INR(0,7),
+                                 0x200 | SpriteReason_TileSpriteScaled,
+                                 0x1000, sprite,
+                                 x0, y0,
+                                 plot_action,
+                                 &scale, pixtrans);
+    if (err)
+    {
+        err = tile_sprite(TILE_SPRITEISPOINTER,
+                          (void *)256, sprite,
+                          x0, y0, plot_action,
+                          &scale,
+                          pixtrans);
+    }
+    return err;
 }
 
 
