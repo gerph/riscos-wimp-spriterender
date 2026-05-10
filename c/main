@@ -78,7 +78,7 @@ void test_allforms(wimpgraphics_t *graphics)
                                                   is_halfsize, is_unscaled,
                                                   is_selected, is_shaded,
                                                   COLOUR_RGB(0xDD,0xDD,0xDD), /* Background colour */
-                                                  COLOUR_RGB(96, 192, 96) /* Selection colour */
+                                                  COLOUR_RGB(0x22, 0x66, 0x22) /* Selection colour */
                                                  );
         dprintf("Created a wimpsprite: %p\n", wsprite);
 

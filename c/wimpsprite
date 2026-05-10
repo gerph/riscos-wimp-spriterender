@@ -6,6 +6,7 @@
  ******************************************************************/
 
 #include <stdint.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include "swis.h"
@@ -185,7 +186,8 @@ wimppixtrans_t *wimpsprite_getpixtrans(wimpsprite_t *wsprite)
     {
         /* Apply the selection / shading code */
         colourmapdescriptor_t *colourmap;
-        colourmap = colourmap_setup(wsprite->is_selected, wsprite->is_shaded, wsprite->window_background);
+        colourmap = colourmap_setup(wsprite->is_selected, wsprite->is_shaded,
+                                    wsprite->window_background, wsprite->selection_colour);
         colourmap_func = colourmap->func;
         colourmap_ws = colourmap->pw;
         flags |= ColourTrans_GivenTransferFn;

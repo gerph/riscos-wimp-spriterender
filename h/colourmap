@@ -20,7 +20,8 @@ typedef struct colourmapdescriptor_s {
 
 
 typedef enum selectalgorithm_s {
-    sela_invert
+    sela_invert,
+    sela_selectblend
 } selectalgorithm_t;
 
 typedef enum shadealgorithm_s {
@@ -39,14 +40,16 @@ extern shadealgorithm_t shade_algorithm;
  Description:   Create us a colour map descriptor for the sprite rendering
  Parameters:    is_selected = true if we are selected
                 is_shaded = true if we are shaded
-                bgcolour = the colour to blend to
+                winbgcolour = the window background
+                selbgcolour = the icon background for selections
  Returns:       colour map descriptor to use
 
  WARNING:       There is only ONE descriptor at present.
  ******************************************************************/
 colourmapdescriptor_t *colourmap_setup(bool is_selected,
                                        bool is_shaded,
-                                       colour_t bgcolour);
+                                       colour_t winbgcolour,
+                                       colour_t selbgcolour);
 
 
 /* Our assembler function that handles the ColourMap */

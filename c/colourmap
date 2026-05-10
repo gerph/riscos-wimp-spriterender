@@ -14,7 +14,8 @@
 typedef struct colourmapparams_s {
     bool is_selected;
     bool is_shaded;
-    colour_t bgcolour;
+    colour_t winbgcolour;
+    colour_t selbgcolour;
 } colourmapparams_t;
 
 typedef struct colourmapdescriptor_internal_s {
@@ -34,19 +35,22 @@ extern void *module_pw;
  Description:   Create us a colour map descriptor for the sprite rendering
  Parameters:    is_selected = true if we are selected
                 is_shaded = true if we are shaded
-                bgcolour = the colour to blend to
+                winbgcolour = the window background
+                selbgcolour = the icon background for selections
  Returns:       colour map descriptor to use
 
  WARNING:       There is only ONE descriptor at present.
  ******************************************************************/
 colourmapdescriptor_t *colourmap_setup(bool is_selected,
                                        bool is_shaded,
-                                       colour_t bgcolour)
+                                       colour_t winbgcolour,
+                                       colour_t selbgcolour)
 {
     /* FIXME: We probably also need to handle the tinting operator as well */
     desc.params.is_selected = is_selected;
     desc.params.is_shaded = is_shaded;
-    desc.params.bgcolour = bgcolour;
+    desc.params.winbgcolour = winbgcolour;
+    desc.params.selbgcolour = selbgcolour;
 
     desc.descriptor.pw = module_pw;
     desc.descriptor.func = (void*)&ColourMap_Entry;
@@ -55,7 +59,7 @@ colourmapdescriptor_t *colourmap_setup(bool is_selected,
 }
 
 
-selectalgorithm_t select_algorithm = sela_invert;
+selectalgorithm_t select_algorithm = sela_selectblend;
 shadealgorithm_t shade_algorithm = shaa_backgroundblend; //shaa_greyblend; //shaa_grey;
 
 
@@ -73,6 +77,16 @@ colour_t colourmap_transform(colour_t colour)
         {
             case sela_invert:
                 colour = colour ^ 0xFFFFFF00;
+                break;
+
+            case sela_selectblend:
+                {
+                    uint32_t mask = 0x7F7F7F00;
+                    uint32_t selbgcolour = desc.params.selbgcolour;
+                    colour = (colour>>1) & mask;
+                    selbgcolour = (selbgcolour >> 1) & mask;
+                    colour = colour + selbgcolour;
+                }
                 break;
         }
     }
@@ -110,7 +124,7 @@ colour_t colourmap_transform(colour_t colour)
             case shaa_backgroundblend:
                 // RISC OS Select fade using background colour
                 {
-                    uint32_t bgcolour = desc.params.bgcolour;
+                    uint32_t winbgcolour = desc.params.winbgcolour;
                     uint32_t total;
                     uint32_t grey;
                     uint32_t grey_scaled;
@@ -122,17 +136,17 @@ colour_t colourmap_transform(colour_t colour)
 
                     grey_scaled = grey * 69;
 
-                    b = (bgcolour>>24);
+                    b = (winbgcolour>>24);
                     b = b * 85;  // 85 = 255 / 3
                     b = (b>>7) + 16;
                     b = b + (grey_scaled >> 8);
 
-                    g = (bgcolour>>16) & 255;
+                    g = (winbgcolour>>16) & 255;
                     g = g * 85;  // 85 = 255 / 3
                     g = (g>>7) + 16;
                     g = g + (grey_scaled >> 8);
 
-                    r = (bgcolour>>8) & 255;
+                    r = (winbgcolour>>8) & 255;
                     r = r * 85;  // 85 = 255 / 3
                     r = (r>>7) + 16;
                     r = r + (grey_scaled >> 8);
