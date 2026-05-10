@@ -1,4 +1,6 @@
-REM >TestSWIs
+REM >TestSWI
+
+CLS
 
 PRINT "Get the size of the sprite"
 SYS "WimpSpriteRender_Size", 0, "file_ff9", &DDDDDD00, &22662200 TO w,h
