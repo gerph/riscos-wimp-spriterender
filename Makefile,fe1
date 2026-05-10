@@ -41,8 +41,14 @@ OBJS       = o.main \
 		   	 o.tile \
 		   	 o.wimpgraphics \
 		   	 o.colourmap \
-		   	 o.colourmap_user_shim \
 		   	 o.colourtrans
+
+ifeq (${BUILD64},1)
+OBJS +=    	 o.colourmap_user_shim64
+else
+OBJS +=   	 o.colourmap_user_shim
+endif
+
 
 # Space separated list of XML files for building documentation.
 #DOCSRC = <prm-in-xml-sources>

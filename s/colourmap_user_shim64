@@ -1,0 +1,25 @@
+
+        AREA        |C$$code|, CODE, READONLY
+
+        EXPORT      ColourMap_Entry
+
+        IMPORT      |_Lib$Reloc$Off$DP|
+
+ColourMap_Entry
+; => r0 = the &BBGGRR00
+; <= r0 = the transformed colour
+
+; Entered in SVC mode.
+        STP         x29, x30, [sp, #-16]!
+        MOV         x29, sp
+; fake entry for SVC mode
+; FIXME: Decide whether to clear the frame pointer.
+
+        IMPORT      colourmap_transform
+        BL          colourmap_transform             ; The actual C call
+
+        CMP         x0, x0                          ; clear V
+        LDP         x29, x30, [sp], #16
+        RET
+
+        END
