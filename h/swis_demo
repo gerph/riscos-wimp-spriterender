@@ -1,0 +1,16 @@
+/*******************************************************************
+ * File:        swis_demo
+ * Purpose:     Demos for rendering SWIs from BASIC
+ * Author:      Gerph
+ * Date:        10 May 2026
+ ******************************************************************/
+
+#ifndef SWIS_DEMO_H
+#define SWIS_DEMO_H
+
+#include "kernel.h"
+
+#include "modhead.h"
+
+#endif
+

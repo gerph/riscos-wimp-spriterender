@@ -1,0 +1,38 @@
+/*******************************************************************
+ * File:        swis_demo
+ * Purpose:     Demos for rendering SWIs from BASIC
+ * Author:      Gerph
+ * Date:        10 May 2026
+ ******************************************************************/
+
+#include "kernel.h"
+
+#include "swis_demo.h"
+
+
+/***************************************************************************
+ * Description:  SWI handler routine. All SWIs for this module will be
+ *               passed to these routines.
+ * Parameters:   number = SWI number within SWI chunk (i.e. 0 to 63)
+ *               r      = pointer to register block on entry
+ *               pw     = private word for module
+ * On exit:      Return NULL if SWI handled successfully, setting return
+ *               register values (r0-r9) in r.
+ *               Return error_BAD_SWI for out of range SWIs.
+ *               Return an error block for a custom error.
+ **************************************************************************/
+/* Functions called to handle particular SWI calls */
+_kernel_oserror *SWI_Size(int number, _kernel_swi_regs *r, void *pw)
+{
+    return err_NotImplemented;
+}
+
+_kernel_oserror *SWI_Render(int number, _kernel_swi_regs *r, void *pw)
+{
+    return err_NotImplemented;
+}
+
+_kernel_oserror *SWI_Tile(int number, _kernel_swi_regs *r, void *pw)
+{
+    return err_NotImplemented;
+}
