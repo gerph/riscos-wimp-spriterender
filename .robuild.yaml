@@ -32,7 +32,7 @@ jobs:
       # Build component
       - echo
       - echo *** Build the component ***
-      - amu -f Makefile install INSTDIR=Install
+      - amu -f MakefileTest install INSTDIR=Install
 
       # Test the command
       - echo

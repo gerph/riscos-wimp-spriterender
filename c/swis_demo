@@ -5,9 +5,54 @@
  * Date:        10 May 2026
  ******************************************************************/
 
+#include <stdio.h>
 #include "kernel.h"
+#include "swis.h"
+
+#include "riscos/Sprite.h"
+
+#include "wimpgraphics.h"
+#include "wimpsprite.h"
+#include "sprite.h"
 
 #include "swis_demo.h"
+
+
+#define DEBUG
+
+#ifdef DEBUG
+#define dprintf if (1) printf
+#else
+#define dprintf if (0) printf
+#endif
+
+
+#define Wimp_IconHalfSize                        ((uint32_t)(1u<<11))
+#define Wimp_IconSelected                        ((uint32_t)(1u<<21))
+#define Wimp_IconShaded                          ((uint32_t)(1u<<22))
+#define Wimp_DemoSpriteUnscaled                  ((uint32_t)(1u<<23))
+#define Wimp_IconIndirected                      ((uint32_t)(1u<<8))    /* Is sprite pointer, not sprite name */
+
+
+extern wimpgraphics_t *graphics;
+
+
+sprite_t *find_sprite(const char *name)
+{
+    /* I want to get a sprite */
+    sprite_t *sprite;
+    _kernel_oserror *err;
+    err = _swix(Wimp_SpriteOp, _INR(0, 2)|_OUT(2),
+                               0x100 + SpriteReason_SelectSprite, 0, name, &sprite);
+    if (err)
+    {
+        dprintf("Could not find sprite: %s\n", err->errmess);
+        return NULL;
+    }
+    dprintf("Found the sprite at %p\n", sprite);
+    return sprite;
+}
+
 
 
 /***************************************************************************
@@ -24,7 +69,59 @@
 /* Functions called to handle particular SWI calls */
 _kernel_oserror *SWI_Size(int number, _kernel_swi_regs *r, void *pw)
 {
-    return err_NotImplemented;
+    /* WimpSpriteRender_Size
+        =>  R0 = flags:
+                    b8  = R1 is sprite pointer, not sprite name
+                    b11 = half-size
+                    b21 = selected
+                    b22 = shaded
+                    b23 = unscaled
+                    others must be 0
+            R1 -> sprite name
+            R2 = window background colour
+            R3 = selection colour
+        <=  R0 = width
+            R1 = height
+     */
+    wimpsprite_t *wsprite;
+    sprite_t *sprite;
+    uint32_t flags = (uint32_t)r->r[0];
+    bool is_halfsize = flags & Wimp_IconHalfSize;
+    bool is_unscaled = flags & Wimp_DemoSpriteUnscaled;
+    bool is_selected = flags & Wimp_IconSelected;
+    bool is_shaded = flags & Wimp_IconShaded;
+    colour_t window_background = (colour_t)r->r[2];
+    colour_t selection_colour = (colour_t)r->r[3];
+
+    if (flags & Wimp_IconIndirected)
+    {
+        /* r1 is a sprite pointer */
+        sprite = (sprite_t *)r->r[1];
+    }
+    else
+    {
+        /* FIXME: Look up sprite */
+        sprite = find_sprite((const char*)r->r[1]);
+        if (sprite == NULL)
+            return err_NoSuchSprite;
+    }
+
+    wsprite = wimpsprite_create(graphics, sprite,
+                                is_halfsize, is_unscaled,
+                                is_selected, is_shaded,
+                                window_background,
+                                selection_colour);
+    if (wsprite == NULL)
+        return err_InternalError;
+
+    {
+        bounds_t bounds;
+        bounds = wimpsprite_getsize(wsprite);
+        r->r[0] = bounds.width;
+        r->r[1] = bounds.height;
+    }
+
+    return NULL;
 }
 
 _kernel_oserror *SWI_Render(int number, _kernel_swi_regs *r, void *pw)

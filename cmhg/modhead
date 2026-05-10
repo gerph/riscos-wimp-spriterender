@@ -52,13 +52,15 @@ swi-chunk-base-number: &C1600
 ; &1B000000- &1BFFFFFF are for program (NOT module) errors.
 ; &80000000- &FFFFFFFF are for serious hardware exceptions.
 ; Consult PRM 1-43, 5a-493 for more details.
-;error-base: &840000
+error-base: &841800
 
 ; Allocating error messages within the module is more efficient than doing
 ; so manually in your C code, and is less likely to pollute error number
 ; space. The number is optional, and if omitted will be allocated from the
 ; error chunk.
-error-identifiers: err_NotImplemented(0,"Not implemented")
+error-identifiers: err_NotImplemented("Not implemented"),
+                   err_InternalError("Internal error (maybe memory allocation failure?)"),
+                   err_NoSuchSprite("No such sprite") 
 
 ; When the module is initialised, this routine will be entered. You should
 ; be very careful to initialise your module safely. If anything fails, you
@@ -120,7 +122,7 @@ swi-decoding-table: WimpSpriteRender \
 ;   private-word: <register> Private word register
 ;   carry-capable:           Veneer is capable of handling returning of the
 ;                            carry flag
-;generic-veneers: Veneer_Entry/Veneer_Handler
+generic-veneers: ColourMap_Entry/colourmap_transform
 
 ; IRQ veneers are the old name for vector-handlers. Use vector-handlers in
 ; preference to irq-handlers.

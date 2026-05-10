@@ -10,6 +10,9 @@
 #include "kernel.h"
 #include "modhead.h"
 
+#include "wimpgraphics.h"
+
+
 #define DEBUG
 
 #ifdef DEBUG
@@ -18,6 +21,8 @@
 #define dprintf if (0) printf
 #endif
 
+wimpgraphics_t *graphics;
+void *module_pw;
 
 /***************************************************************************
  * Function:     Mod_Init
@@ -33,6 +38,12 @@
  **************************************************************************/
 _kernel_oserror *Mod_Init(const char *tail, int podule_base, void *pw)
 {
+    graphics = wimpgraphics_create();
+    if (graphics == NULL)
+        return err_InternalError;
+
+    module_pw = pw;
+
     dprintf("Module WimpSpriteRender initialised\n");
     return NULL;
 }
