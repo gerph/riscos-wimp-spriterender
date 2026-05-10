@@ -53,6 +53,10 @@ colourmapdescriptor_t *colourmap_setup(bool is_selected,
 
 
 /* Our assembler function that handles the ColourMap */
+#ifdef APP
 extern void (*ColourMap_Entry)(void);
+#else
+#include "modhead.h"
+#endif
 
 #endif

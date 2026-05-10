@@ -32,6 +32,7 @@
 #define Wimp_IconShaded                          ((uint32_t)(1u<<22))
 #define Wimp_DemoSpriteUnscaled                  ((uint32_t)(1u<<23))
 #define Wimp_IconIndirected                      ((uint32_t)(1u<<8))    /* Is sprite pointer, not sprite name */
+#define Wimp_IconFilled                          ((uint32_t)(1u<<5))    /* tiled */
 
 
 extern wimpgraphics_t *graphics;
@@ -120,16 +121,73 @@ _kernel_oserror *SWI_Size(int number, _kernel_swi_regs *r, void *pw)
         r->r[0] = bounds.width;
         r->r[1] = bounds.height;
     }
+    /* Need to destroy stuff */
 
     return NULL;
 }
 
+
+
+
 _kernel_oserror *SWI_Render(int number, _kernel_swi_regs *r, void *pw)
 {
-    return err_NotImplemented;
+    /* WimpSpriteRender_Render
+        =>  R0 = flags:
+                    b5  = tile the sprite
+                    b8  = R1 is sprite pointer, not sprite name
+                    b11 = half-size
+                    b21 = selected
+                    b22 = shaded
+                    b23 = unscaled
+                    others must be 0
+            R1 -> sprite name
+            R2 = window background colour
+            R3 = selection colour
+            R4 = x0
+            R5 = y0
+     */
+    wimpsprite_t *wsprite;
+    sprite_t *sprite;
+    _kernel_oserror *err;
+    uint32_t flags = (uint32_t)r->r[0];
+    bool is_halfsize = flags & Wimp_IconHalfSize;
+    bool is_unscaled = flags & Wimp_DemoSpriteUnscaled;
+    bool is_selected = flags & Wimp_IconSelected;
+    bool is_shaded = flags & Wimp_IconShaded;
+    bool is_tiled = flags & Wimp_IconFilled;
+    colour_t window_background = (colour_t)r->r[2];
+    colour_t selection_colour = (colour_t)r->r[3];
+    int x0 = r->r[4];
+    int y0 = r->r[5];
+
+    if (flags & Wimp_IconIndirected)
+    {
+        /* r1 is a sprite pointer */
+        sprite = (sprite_t *)r->r[1];
+    }
+    else
+    {
+        /* FIXME: Look up sprite */
+        sprite = find_sprite((const char*)r->r[1]);
+        if (sprite == NULL)
+            return err_NoSuchSprite;
+    }
+
+    wsprite = wimpsprite_create(graphics, sprite,
+                                is_halfsize, is_unscaled,
+                                is_selected, is_shaded,
+                                window_background,
+                                selection_colour);
+    if (wsprite == NULL)
+        return err_InternalError;
+
+    err = wimpsprite_render(wsprite, x0, y0, is_tiled);
+
+    return err;
 }
 
-_kernel_oserror *SWI_Tile(int number, _kernel_swi_regs *r, void *pw)
+_kernel_oserror *ColourMap_Handler(_kernel_swi_regs *r, void *pw)
 {
-    return err_NotImplemented;
+    r->r[0] = colourmap_transform(r->r[0]);
+    return NULL;
 }

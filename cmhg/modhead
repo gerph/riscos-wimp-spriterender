@@ -95,8 +95,7 @@ finalisation-code: Mod_Final
 ; may be followed by /<entry> to use a particular routine to handle a SWI.
 swi-decoding-table: WimpSpriteRender \
                         Size/SWI_Size,
-                        Render/SWI_Render,
-                        Tile/SWI_Tile
+                        Render/SWI_Render
 
 ; The library initialisation code sets up the C environment for use with
 ; this module. You may wish to perform some initialisation prior to the C
@@ -122,7 +121,7 @@ swi-decoding-table: WimpSpriteRender \
 ;   private-word: <register> Private word register
 ;   carry-capable:           Veneer is capable of handling returning of the
 ;                            carry flag
-generic-veneers: ColourMap_Entry/colourmap_transform
+generic-veneers: ColourMap_Entry/ColourMap_Handler
 
 ; IRQ veneers are the old name for vector-handlers. Use vector-handlers in
 ; preference to irq-handlers.

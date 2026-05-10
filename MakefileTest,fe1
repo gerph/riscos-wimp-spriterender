@@ -27,7 +27,7 @@ TYPE       = aif
 INCLUDES   =
 
 # Space separated list of defines to set, eg -DDEBUG
-CDEFINES   =
+CDEFINES   = -DAPP
 
 # Space separated list of libraries to link against, eg C:LibName.o.libLibName
 LIBS       = ${CLIB} C:GContext.o.libGContext
