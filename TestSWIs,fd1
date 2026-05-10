@@ -1,0 +1,21 @@
+REM >TestSWIs
+
+PRINT "Get the size of the sprite"
+SYS "WimpSpriteRender_Size", 0, "file_ff9", &DDDDDD00, &22662200 TO w,h
+PRINT "Width:  ";w
+PRINT "Height: ";h
+
+PRINT "Draw a text file"
+SYS "WimpSpriteRender_Render", 0, "file_fff", &DDDDDD00, &22662200, 640, 480
+PRINT "Draw a text file (shaded)"
+SYS "WimpSpriteRender_Render", 1<<22, "file_fff", &DDDDDD00, &22662200, 640, 480 + 16 + h
+PRINT "Draw a text file (selected)"
+SYS "WimpSpriteRender_Render", (1<<21), "file_fff", &DDDDDD00, &22662200, 640 + 16 + w, 480
+PRINT "Draw a text file (selected+shaded)"
+SYS "WimpSpriteRender_Render", (1<<21)OR(1<<22), "file_fff", &DDDDDD00, &22662200, 640 + 16 + w, 480 + 16 + h
+
+PRINT "Tile into graphics window"
+VDU 24,320;320;768;440;
+SYS "WimpSpriteRender_Render", (1<<5), "tile_1r", &DDDDDD00, &22662200, 640, 480
+
+*ScreenSave -native Artifacts.SWIs/png

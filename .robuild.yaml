@@ -31,8 +31,8 @@ jobs:
 
       # Build component
       - echo
-      - echo *** Build the component ***
-      - amu -f MakefileTest install INSTDIR=Install
+      - echo *** Build the test component ***
+      - amu -f MakefileTest install INSTDIR=Artifacts
 
       # Test the command
       - echo
@@ -40,19 +40,73 @@ jobs:
       - IconSprites Sprites22
 
       - echo
-      - echo *** Run command (allforms) ***
+      - echo *** Run test command (allforms) ***
       # Use Mode 28, which has more colours
       - echo <22><28>
       - aif32.WimpSpriteRender allforms
-      - ScreenSave -native Install.AllForms/png
+      - ScreenSave -native Artifacts.AllForms/png
 
       - echo
-      - echo *** Run command (tile) ***
+      - echo *** Run test command (tile) ***
       # Clear screen
       - echo <12>
       - aif32.WimpSpriteRender tile
-      - ScreenSave -native Install.Tile/png
+      - ScreenSave -native Artifacts.Tile/png
 
+
+      # Export our headers and libraries
+      - echo
+      - echo *** Export the headers or libs ***
+      - amu -f Makefile export
+
+      # Build modules (RAM)
+      - echo
+      - echo *** Build the RAM module (32-bit) ***
+      - amu -f Makefile ram
+
+      - echo
+      - echo *** Build the RAM module (26-bit) ***
+      - amu -f Makefile ram BUILD26=1 BUILD32=
+
+      # Build modules for ROM
+      - echo
+      - echo *** Build the ROM module (32-bit) ***
+      - amu -f Makefile rom
+
+      - echo
+      - echo *** Build the ROM module (26-bit) ***
+      - amu -f Makefile rom BUILD26=1 BUILD32=
+
+      # Tests - loading to check that it starts up
+      - echo
+      - echo *** Load the module ***
+      - RMLoad rm32.WimpSpriteRender
+
+      # Insert any testing here...
+      - echo
+      - echo *** Test that the module works ***
+      - /TestSWIs
+
+      - echo
+      - echo *** Kill the module ***
+      - RMKill WimpSpriteRender
+
+      # Construct the artifacts to release
+      - echo *** Copy artifacts ***
+      - cdir Artifacts
+      - copy rm32 Artifacts.* ~CVR
+      - copy rm Artifacts.* ~CVR
+      - copy aof32 Artifacts.* ~CVR
+      - copy aof Artifacts.* ~CVR
+      - IfThere <Exports$Dir>.C.h.WimpSpriteRender Then cdir Artifacts.Lib
+      - IfThere <Exports$Dir>.C.h.WimpSpriteRender Then cdir Artifacts.Lib.h
+      - IfThere <Exports$Dir>.C.h.WimpSpriteRender Then copy <Exports$Dir>.C.h.WimpSpriteRender Artifacts.Lib.h.WimpSpriteRender ~CV
+      - IfThere <Exports$Dir>.Lib.WimpSpriteRender Then cdir Artifacts.Lib
+      - IfThere <Exports$Dir>.Lib.WimpSpriteRender Then copy <Exports$Dir>.Lib.WimpSpriteRender Artifacts.Lib.WimpSpriteRender ~CVR
+      # Remove the directory if it was empty
+      - X remove <Exports$Dir>.Lib.WimpSpriteRender
+      - X remove <Exports$Dir>.Lib
+      - IfThere LICENSE Then copy LICENSE Artifacts.* ~CV
 
       # Done!
       - echo
@@ -64,4 +118,4 @@ jobs:
     artifacts:
       # Each element of the artifacts should have a path key, which gives the file or
       # directory to return.
-      - path: Install
+      - path: Artifacts
