@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "kernel.h"
 #include "GContext/gcontext.h"
 
 #include "colourtransconstants.h"
