@@ -11,6 +11,10 @@
 #include "GContext/gcontext.h"
 #include "colourmap.h"
 
+#ifndef APP
+#include "modhead.h"
+#endif
+
 typedef struct colourmapparams_s {
     bool is_selected;
     bool is_shaded;
