@@ -19,7 +19,8 @@
  Parameters:   flags = the flags to use
                sprarea-> the sprite area to use
                spr-> the sprite to use
-               x,y = the origin coordinates
+               x = the origin X coordinate
+               y = the origin Y coordinate
                action = the plot action to use
                scale-> the scale block
                trans-> the pixel translation table

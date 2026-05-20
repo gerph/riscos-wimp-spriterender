@@ -36,7 +36,10 @@ typedef int tile_f(void *private, int x, int y, bbox_t *box);
  Description:  Simple tiling algorithm
  Parameters:   func-> the function to call for tiling
                funcpriv = private value to pass to function
-               xo,yo = the origin position
+               xo = the origin X position
+               yo = the origin Y position
+               w = tile width
+               h = tile height
                box-> the bounding box to tile into (expected to
                      be initialised as a graphics window)
  Returns:      none

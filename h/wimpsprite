@@ -41,12 +41,12 @@ typedef struct wimppixtrans_s {
  Description:   Create a sprite object for rendering or sizing.
  Parameters:    graphics-> our Wimp graphics context
                 sprite-> the sprite we are rendering
-                is_halfsize
-                is_unscaled
-                is_selected
-                is_shaded = properties for the render
-                window_background
-                selection_colour = rendering properties
+                is_halfsize = true if half size
+                is_unscaled = true if unscaled
+                is_selected = true if selected
+                is_shaded = true if shaded
+                window_background = window background colour
+                selection_colour = selection colour
  Returns:       pointer to a new renderable sprite object
  ******************************************************************/
 wimpsprite_t *wimpsprite_create(wimpgraphics_t *graphics, sprite_t *sprite,
@@ -93,6 +93,9 @@ void wimpsprite_freepixtrans(wimppixtrans_t *wpixtrans);
  Function:      wimpsprite_render
  Description:   Render a given sprite to a position, possibly tiled.
  Parameters:    wsprite-> the sprite we wish to render
+                x0 = X coordinate
+                y0 = Y coordinate
+                is_tiled = true if tiled
  Returns:       pointer to error, or NULL if successful
  ******************************************************************/
 _kernel_oserror *wimpsprite_render(wimpsprite_t *wsprite, int x0, int y0, bool is_tiled);

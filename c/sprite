@@ -80,8 +80,8 @@ eigenfactors_t sprite_geteigenfactors(sprite_t *sprite)
  Function:      sprite_log2bpp
  Description:   Read the depth of the sprite as log2bits per pixel
  NOTE:          Does not handle modern sprite types
- Parameters:    var = value
- Returns:       none
+ Parameters:    sprite = sprite to check
+ Returns:       log2bits per pixel
  ******************************************************************/
 int sprite_log2bpp(sprite_t *sprite)
 {

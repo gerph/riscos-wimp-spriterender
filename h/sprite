@@ -55,8 +55,8 @@ eigenfactors_t sprite_geteigenfactors(sprite_t *sprite);
  Function:      sprite_log2bpp
  Description:   Read the depth of the sprite as log2bits per pixel
  NOTE:          Does not handle modern sprite types
- Parameters:    var = value
- Returns:       none
+ Parameters:    sprite = sprite to check
+ Returns:       log2bits per pixel
  ******************************************************************/
 int sprite_log2bpp(sprite_t *sprite);
 
@@ -71,11 +71,12 @@ bool sprite_haspalette(sprite_t *sprite);
 /*************************************************** Gerph *********
  Function:      sprite_tile
  Description:   Tile sprites on to the screen
- Parameters:    sprite-> the sprite to render
-                x0, y0 = bottom left
+ Parameters:    sprite = the sprite to render
+                x0 = bottom left X
+                y0 = bottom left Y
                 scale = the scale factor to use (may be identity)
                 plot_action = action for rendering (may include mask bit and wide pixtrans bits)
-                pixtrans-> the pixel translation table to use
+                pixtrans = the pixel translation table to use
  Returns:       pointer to error, or NULL if successful
  ******************************************************************/
 _kernel_oserror *sprite_tile(sprite_t *sprite, int x0, int y0,
@@ -86,11 +87,12 @@ _kernel_oserror *sprite_tile(sprite_t *sprite, int x0, int y0,
 /*************************************************** Gerph *********
  Function:      sprite_render
  Description:   Render a sprite on to the screen
- Parameters:    sprite-> the sprite to render
-                x0, y0 = bottom left
+ Parameters:    sprite = the sprite to render
+                x0 = bottom left X
+                y0 = bottom left Y
                 scale = the scale factor to use (may be identity)
                 plot_action = action for rendering (may include mask bit and wide pixtrans bits)
-                pixtrans-> the pixel translation table to use
+                pixtrans = the pixel translation table to use
  Returns:       pointer to error, or NULL if successful
  ******************************************************************/
 _kernel_oserror *sprite_render(sprite_t *sprite, int x0, int y0,
