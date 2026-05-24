@@ -51,6 +51,14 @@ colourmapdescriptor_t *colourmap_setup(bool is_selected,
                                        colour_t winbgcolour,
                                        colour_t selbgcolour);
 
+/*************************************************** Gerph *********
+ Function:      colourmap_transform
+ Description:   Transform the colour we have been given
+ Parameters:    colour = &BBGGRR00 to transform
+ Returns:       &BBGGRR00 which has been transformed
+ ******************************************************************/
+colour_t colourmap_transform(colour_t colour);
+
 
 /* Our assembler function that handles the ColourMap */
 #ifdef APP
