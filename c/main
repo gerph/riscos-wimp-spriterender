@@ -66,7 +66,8 @@ void test_allforms(wimpgraphics_t *graphics)
                              128 - 32, 480 + 128 + 32,
                              128 + 128 * 4 + 32, 480 - 128 * 3 - 32);
 
-    sprite = find_sprite("file_ff9");
+    //sprite = find_sprite("file_ff9");
+    sprite = find_sprite("grightc");
 
     for (i=0; i<16; i++)
     {
@@ -110,6 +111,8 @@ int main(int argc, char *argv[])
 {
     wimpgraphics_t *graphics = wimpgraphics_create();
     char *cmd;
+
+    palette_init();
 
     dprintf("module_pw = %p\n", module_pw);
     dprintf("module_ws = %p\n", module_ws);

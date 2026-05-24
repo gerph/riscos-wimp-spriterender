@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "swis.h"
 
@@ -107,7 +108,7 @@ int sprite_log2bpp(sprite_t *sprite)
 bool sprite_haspalette(sprite_t *sprite)
 {
     /* FIXME: Shouldn't I have called the OS_SpriteOp call to check the palette existence ? */
-    if ( ((uint8_t*)sprite->offset_bitmap) == ((uint8_t*)sprite) + sizeof(sprite) )
+    if ( sprite->offset_bitmap == sizeof(*sprite) )
     {
         /* The bitmap starts after the header, so there isn't a palette */
         return false;
@@ -167,7 +168,7 @@ _kernel_oserror *sprite_render(sprite_t *sprite, int x0, int y0,
                                  x0, y0,
                                  plot_action,
                                  &scale, pixtrans);
-    dprintf("sprite_render of sprite %p, at %i, %i, with action %i gave: %s\n", sprite, x0, y0, plot_action,
+    dprintf("sprite_render of sprite %p, pixtrans %p, at %i, %i, with action %i gave: %s\n", sprite, pixtrans, x0, y0, plot_action,
             err ? err->errmess : "<no error>");
     return err;
 }

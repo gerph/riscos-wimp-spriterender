@@ -170,12 +170,14 @@ wimppixtrans_t *wimpsprite_getpixtrans(wimpsprite_t *wsprite)
         /* FIXME: There are other palettes for the 2 and 4 colour modes? */
         /* FIXME: This should be read from the wimp graphics context */
         src_palette = &current_wimp_palette;
+        dprintf("Using Wimp 16 colour palette\n");
     }
     else
     {
         /* Other depths; use the sprite's own palette */
         src_mode = 256;  /* 256 is a special marker to mean this is a sprite palette */
         src_palette = sprite_address(wsprite->sprite);
+        dprintf("Using own palette%s\n", sprite_haspalette(wsprite->sprite) ? "" : " but doesn't have one");
     }
 
     flags = ColourTrans_GivenSprite | ColourTrans_ReturnWideEntries;
@@ -204,7 +206,7 @@ wimppixtrans_t *wimpsprite_getpixtrans(wimpsprite_t *wsprite)
 
     wpixtrans->pixtrans = (char *)wpixtrans + sizeof(*wpixtrans);
 
-    dprintf("ColourTrans_GenerateTable for sprite %p, with flags &%x, colourmap %p/%p\n", src_palette, flags, colourmap_func, colourmap_ws);
+    dprintf("ColourTrans_GenerateTable for mode %i, palette %p, with flags &%x, colourmap %p/%p\n", src_mode, src_palette, flags, colourmap_func, colourmap_ws);
     if (!colourtrans_generatetable(src_mode, (void*)src_palette,
                                    ColourTrans_CurrentMode, (void*)ColourTrans_CurrentPalette,
                                    wpixtrans->pixtrans,
